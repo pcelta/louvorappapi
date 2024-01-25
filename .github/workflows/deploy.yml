@@ -1,0 +1,75 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - feature/deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - run: npm ci
+      - run: npm run build --if-present
+      - name: Install Zip
+        uses: montudor/action-zip@v0.1.1
+      - name: Zip Dist as Artifact (at root /)
+        run: |
+          cd ./dist
+          echo "Compressing these files:"
+          ls -al
+          zip -qq -r -T ../api.zip *
+
+      # Salva o .zip entre os passos de deploy
+      - name: Save Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: api.zip
+          path: api.zip
+          if-no-files-found: error
+
+  transfer-artifact:
+    needs: [build]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      # Baixa o artefato que teve upload no passo de build
+      - uses: actions/download-artifact@v2
+        with:
+          name: api.zip
+
+      # Faz upload de artefatos para o  VPS para o uso posterior
+      - name: Upload Artifact over SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.DIGITALOCEAN_HOST }}
+          key: ${{ secrets.SSH_PVT_KEY }}
+          username: ${{ vars.DIGITALOCEAN_USERNAME }}
+          overwrite: true
+          source: "api.zip"
+          target: "/opt"
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy to Digital Ocean
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ vars.DIGITALOCEAN_HOST }}
+  #         key: ${{ secrets.SSH_PVT_KEY }}
+  #         username: ${{ vars.DIGITALOCEAN_USERNAME }}
+  #         script: |
+  #           rm -rf /app
+  #           mkdir /app
+  #           cd /app
+  #           git clone git@github.com:pcelta/louvorappapi.git .
+  #           npm install
+
