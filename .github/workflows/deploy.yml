@@ -21,7 +21,7 @@ jobs:
       - name: Zip Dist as Artifact (at root /)
         run: |
           cd ./dist
-          echo "Compressing these files:"
+          echo "Compressing files from dist dir:"
           ls -al
           zip -qq -r -T ../api.zip *
 
@@ -57,19 +57,27 @@ jobs:
           source: "api.zip"
           target: "/opt"
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to Digital Ocean
-  #       uses: appleboy/ssh-action@v1.0.3
-  #       with:
-  #         host: ${{ vars.DIGITALOCEAN_HOST }}
-  #         key: ${{ secrets.SSH_PVT_KEY }}
-  #         username: ${{ vars.DIGITALOCEAN_USERNAME }}
-  #         script: |
-  #           rm -rf /app
-  #           mkdir /app
-  #           cd /app
-  #           git clone git@github.com:pcelta/louvorappapi.git .
-  #           npm install
+  server-code-update:
+    needs: [transfer-artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.DIGITALOCEAN_HOST }}
+          key: ${{ secrets.SSH_PVT_KEY }}
+          username: ${{ vars.DIGITALOCEAN_USERNAME }}
+          script: |
+            apt-get update && apt-get install -y npm zip
+            npm install pm2 --location=global
+      - name: Deploy to Digital Ocean
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.DIGITALOCEAN_HOST }}
+          key: ${{ secrets.SSH_PVT_KEY }}
+          username: ${{ vars.DIGITALOCEAN_USERNAME }}
+          script: |
+            unzip -o /opt/api.zip -d /api
+            cd /api
+            pm2 start main.js
 
