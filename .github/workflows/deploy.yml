@@ -78,5 +78,5 @@ jobs:
           script: |
             unzip -o /opt/api.zip -d /api
             cd /api
-            pm2 start dist/main.js
+            pm2 reload dist/main.js
 
