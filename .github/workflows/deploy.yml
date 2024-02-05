@@ -77,6 +77,7 @@ jobs:
           username: ${{ vars.DIGITALOCEAN_USERNAME }}
           script: |
             unzip -o /opt/api.zip -d /api
+            rm -f /opt/api.zip
             cd /api
             pm2 reload dist/main.js
 
