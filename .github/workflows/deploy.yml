@@ -20,9 +20,9 @@ jobs:
         uses: montudor/action-zip@v0.1.1
       - name: Zip Dist as Artifact (at root /)
         run: |
-          cd ./dist
           echo "Compressing files from dist dir:"
           ls -al
+          rm -rf src test
           zip -qq -r -T ../api.zip *
 
       # Salva o .zip entre os passos de deploy
@@ -79,5 +79,5 @@ jobs:
           script: |
             unzip -o /opt/api.zip -d /api
             cd /api
-            pm2 start main.js
+            pm2 start dist/main.js
 
