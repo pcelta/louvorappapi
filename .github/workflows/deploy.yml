@@ -22,7 +22,7 @@ jobs:
         run: |
           echo "Compressing files"
           ls -al
-          zip -q -r -T ../api.zip dist node_modules
+          zip -q -r -T api.zip dist node_modules
 
       # Salva o .zip entre os passos de deploy
       - name: Save Build Artifact
