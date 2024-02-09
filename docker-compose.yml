@@ -4,6 +4,6 @@ services:
     volumes:
       - ./local/db.sql:/docker-entrypoint-initdb.d/01-db.sql
     environment:
-      POSTGRES_PASSWORD: "@rock4me@"
+      POSTGRES_PASSWORD: "rock4me!!"
     ports:
       - "5432:5432"

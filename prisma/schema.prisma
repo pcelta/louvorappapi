@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ChurchMember {
+  id         Int      @id @default(autoincrement())
+  fk_church  Int
+  fk_member  Int
+  is_active  Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime
+  church     Church @relation(fields: [fk_church], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_churches")
+  member     Member  @relation(fields: [fk_member], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_members")
+
+  @@map("church_members")
+}
+
+model Church {
+  id             Int              @id @default(autoincrement())
+  uid            String           @db.VarChar(50)
+  name           String           @db.VarChar(255)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime
+  churchMembers  ChurchMember[]
+  memberRoles    MemberRole[]
+
+  @@map("churches")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model MemberRole {
+  id         Int      @id @default(autoincrement())
+  fk_member  Int
+  fk_role    Int
+  created_at DateTime @default(now())
+  updated_at DateTime
+  church     Church @relation(fields: [fk_role], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_roles")
+  member     Member @relation(fields: [fk_member], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_members")
+
+  @@map("member_roles")
+}
+
+model Member {
+  id             Int              @id @default(autoincrement())
+  uid            String           @db.VarChar(50)
+  fk_user        Int
+  name           String           @db.VarChar(255)
+  dob            DateTime?        @db.Date
+  created_at     DateTime         @default(now())
+  updated_at     DateTime
+  churchMembers  ChurchMember[]
+  membeRoles     MemberRole[]
+  user           User             @relation(fields: [fk_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_members_users")
+
+  @@map("members")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  uid         String   @db.VarChar(50)
+  name        String   @db.VarChar(50)
+  description String   @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime
+
+  @@map("roles")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  uid        String    @db.VarChar(50)
+  email      String    @db.VarChar(100)
+  password   String    @db.VarChar(100)
+  created_at DateTime  @default(now())
+  updated_at DateTime
+  members    Member[]
+
+  @@map("users")
+}

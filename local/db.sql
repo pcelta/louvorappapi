@@ -31,6 +31,7 @@ CREATE TABLE "churches" (
 );
 
 CREATE TABLE "church_members" (
+    "id" SERIAL PRIMARY KEY,
     "fk_church" INT NOT NULL,
     "fk_member" INT NOT NULL,
     "is_active" BOOLEAN NOT NULL,
@@ -50,12 +51,13 @@ CREATE TABLE "roles" (
 );
 
 CREATE TABLE "member_roles" (
+    "id" SERIAL PRIMARY KEY,
     "fk_member" INT NOT NULL,
     "fk_role" INT NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL,
     CONSTRAINT "fk_member_roles_members" FOREIGN KEY ("fk_member") REFERENCES "members" ("id"),
-    CONSTRAINT "fk_cmember_roles_roles" FOREIGN KEY ("fk_role") REFERENCES "churches" ("id")
+    CONSTRAINT "fk_member_roles_roles" FOREIGN KEY ("fk_role") REFERENCES "churches" ("id")
 );
 
 INSERT INTO "roles"("uid", "name", "description", "created_at", "updated_at")
