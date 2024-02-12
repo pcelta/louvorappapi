@@ -3,6 +3,8 @@ import { MemberController } from './member.controller';
 import { MemberService } from './Service/MemberService';
 import { MemberRepository } from './Repository/MemberRepository';
 import { PrismaClient } from '@prisma/client';
+import UserService from './Service/UserService';
+import UserRepository from './Repository/UserRepository';
 
 @Module({
   imports: [],
@@ -12,7 +14,9 @@ import { PrismaClient } from '@prisma/client';
       useValue: new PrismaClient()
     },
     MemberService,
-    MemberRepository
+    UserService,
+    MemberRepository,
+    UserRepository
   ],
   controllers: [
     MemberController

@@ -18,4 +18,10 @@ export class MemberRepository extends AbstractRepository {
 
     return member;
   }
+
+  public async persist(member: Member): Promise<Member> {
+    delete member['id'];
+
+    return this.prismaClient.member.create({ data: { ...member } });
+  }
 }
