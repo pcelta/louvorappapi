@@ -10,13 +10,13 @@ datasource db {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model ChurchMember {
   id         Int      @id @default(autoincrement())
-  fk_church  Int
-  fk_member  Int
-  is_active  Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
-  church     Church @relation(fields: [fk_church], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_churches")
-  member     Member  @relation(fields: [fk_member], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_members")
+  fkChurch   Int      @map("fk_church")
+  fkMember   Int      @map("fk_member")
+  isActive   Boolean  @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @map("updated_at")
+  church     Church   @relation(fields: [fkChurch], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_churches")
+  member     Member   @relation(fields: [fkMember], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_church_members_members")
 
   @@map("church_members")
 }
@@ -25,8 +25,8 @@ model Church {
   id             Int              @id @default(autoincrement())
   uid            String           @db.VarChar(50)
   name           String           @db.VarChar(255)
-  created_at     DateTime         @default(now())
-  updated_at     DateTime
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @map("updated_at")
   churchMembers  ChurchMember[]
   memberRoles    MemberRole[]
 
@@ -36,12 +36,12 @@ model Church {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model MemberRole {
   id         Int      @id @default(autoincrement())
-  fk_member  Int
-  fk_role    Int
-  created_at DateTime @default(now())
-  updated_at DateTime
-  church     Church @relation(fields: [fk_role], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_roles")
-  member     Member @relation(fields: [fk_member], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_members")
+  fkMember   Int      @map("fk_member")
+  fkRole     Int      @map("fk_role")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @map("updated_at")
+  church     Church   @relation(fields: [fkRole], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_roles")
+  member     Member   @relation(fields: [fkMember], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_member_roles_members")
 
   @@map("member_roles")
 }
@@ -49,14 +49,14 @@ model MemberRole {
 model Member {
   id             Int              @id @default(autoincrement())
   uid            String           @db.VarChar(50)
-  fk_user        Int
+  fkUser         Int              @map("fk_user")
   name           String           @db.VarChar(255)
   dob            DateTime?        @db.Date
-  created_at     DateTime         @default(now())
-  updated_at     DateTime
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @map("updated_at")
   churchMembers  ChurchMember[]
   membeRoles     MemberRole[]
-  user           User             @relation(fields: [fk_user], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_members_users")
+  user           User             @relation(fields: [fkUser], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_members_users")
 
   @@map("members")
 }
@@ -66,19 +66,34 @@ model Role {
   uid         String   @db.VarChar(50)
   name        String   @db.VarChar(50)
   description String   @db.VarChar(255)
-  created_at  DateTime @default(now())
-  updated_at  DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @map("updated_at")
 
   @@map("roles")
 }
 
+model UserAccess {
+  id                    Int      @id @default(autoincrement())
+  fkUser                Int      @map("fk_user")
+  accessToken           String   @db.VarChar(100) @map("access_token")
+  accessTokenExpiresAt  DateTime @map("access_token_expires_at")
+  accessTokenCreatedAt  DateTime @map("access_token_created_at")
+  refreshToken          String   @db.VarChar(100) @map("refresh_token")
+  refreshTokenExpiresAt DateTime @map("refresh_token_expires_at")
+  refreshTokenCreatedAt DateTime @map("refresh_token_created_at")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @map("updated_at")
+
+  @@map("user_accesses")
+}
+
 model User {
-  id         Int       @id @default(autoincrement())
-  uid        String    @db.VarChar(50)
-  email      String    @db.VarChar(100)
-  password   String    @db.VarChar(100)
-  created_at DateTime  @default(now())
-  updated_at DateTime
+  id         Int      @id @default(autoincrement())
+  uid        String   @db.VarChar(50)
+  email      String   @db.VarChar(100)
+  password   String   @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @map("updated_at")
   members    Member[]
 
   @@map("users")

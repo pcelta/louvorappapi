@@ -11,6 +11,11 @@ export class MemberController {
     const member = await this.memberService.getMemberByEmail(params.emailOrUid);
 
     if (member !== null) {
+      delete member['fk_user'];
+      delete member['id'];
+      delete member['user']['id'];
+      delete member['user']['password'];
+
       res.status(HttpStatus.OK).json(member);
 
       return;

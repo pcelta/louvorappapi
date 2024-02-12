@@ -11,6 +11,20 @@ CREATE TABLE "users" (
     "updated_at" timestamp(3) NOT NULL
 );
 
+CREATE TABLE "user_accesses" (
+    "id" SERIAL PRIMARY KEY,
+    "fk_user" INT NOT NULL,
+    "access_token" VARCHAR(100) NOT NULL,
+    "access_token_expires_at" timestamp(3) NOT NULL,
+    "access_token_created_at" timestamp(3) NOT NULL,
+    "refresh_token" VARCHAR(100) NOT NULL,
+    "refresh_token_expires_at" timestamp(3) NOT NULL,
+    "refresh_token_created_at" timestamp(3) NOT NULL,
+    "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" timestamp(3) NOT NULL,
+    CONSTRAINT "fk_user_accesses_users" FOREIGN KEY ("fk_user") REFERENCES "users" ("id")
+);
+
 CREATE TABLE "members" (
     "id" SERIAL PRIMARY KEY,
     "uid" VARCHAR(50) NOT NULL,
@@ -68,3 +82,6 @@ VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa41', 'Admin', 'Super usuário com a
 
 INSERT INTO "roles"("uid", "name", "description", "created_at", "updated_at")
 VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa42', 'Membro', 'Membro comum', NOW(), NOW());
+
+INSERT INTO users(uid, email, "password", created_at, updated_at) VALUES('uid1', 'pcelta@pcelta.com', 'pass',NOW(), NOW());
+INSERT INTO members(uid, fk_user, "name", dob, created_at, updated_at) VALUES('uid10', 1, 'Pedro Ribeiro', '1987-02-09',NOW(), NOW());
