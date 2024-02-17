@@ -1,4 +1,3 @@
-import { Member } from "@prisma/client";
 import { Validate, Required, NotEmpty, MaxLength, MinLength, DateString, Email } from "joi-typescript-validator"
 
 export default class MemberCreationDTO {

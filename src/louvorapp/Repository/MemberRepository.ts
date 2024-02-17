@@ -1,27 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { AbstractRepository } from './AbstractRepository';
-import { Member } from '@prisma/client';
+import Member from '../Entity/Member';
 
 @Injectable()
 export class MemberRepository extends AbstractRepository {
   public async findByEmail(email: string): Promise<Member> {
-    const member = await this.prismaClient.member.findFirstOrThrow({
-      where: {
-        user: {
-          email: email
-        }
-      },
-      include: {
-        user: true
-      }
-    });
+    const queryBuilder = this.em.createQueryBuilder(Member, 'm');
+    const member = await queryBuilder.select(['m.*'], true)
+      .join('m.user', 'u')
+      .where({ 'u.email': email })
+      .getSingleResult();
 
     return member;
   }
 
-  public async persist(member: Member): Promise<Member> {
+  public async persist(member: Member) {
     delete member['id'];
-
-    return this.prismaClient.member.create({ data: { ...member } });
+    this.em.persist(member).flush();
   }
 }

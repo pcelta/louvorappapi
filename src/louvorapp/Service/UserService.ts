@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { User } from "@prisma/client";
+
 import * as bcrypt from 'bcrypt';
 import UidManager from "../Util/UidManager";
 import UserRepository from "../Repository/UserRepository";
+import User from '../Entity/User';
 
 @Injectable()
 export default class UserService {

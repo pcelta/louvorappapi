@@ -9,16 +9,11 @@ export class MemberController {
   constructor(private memberService: MemberService) {}
 
   @Get(':emailOrUid')
-  async getHello(@Param() params: any, @Res() res: Response) {
+  async get(@Param() params: any, @Res() res: Response) {
     const member = await this.memberService.getMemberByEmail(params.emailOrUid);
 
     if (member !== null) {
-      delete member['fk_user'];
-      delete member['id'];
-      delete member['user']['id'];
-      delete member['user']['password'];
-
-      res.status(HttpStatus.OK).json(member);
+      res.status(HttpStatus.OK).json( member.toRaw());
 
       return;
     }
@@ -37,9 +32,6 @@ export class MemberController {
 
   const member = await this.memberService.createFromCreationDto(body as MemberCreationDTO);
 
-  delete member['id'];
-  delete member['fk_user'];
-
-  res.status(HttpStatus.CREATED).json({...member});
+  res.status(HttpStatus.CREATED).json({...member.toRaw()});
  }
 }
