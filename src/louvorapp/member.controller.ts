@@ -30,6 +30,14 @@ export class MemberController {
     return;
   }
 
+  const existingMember = await this.memberService.getMemberByEmail(body.email);
+
+  if (existingMember !== null) {
+    res.status(HttpStatus.BAD_REQUEST).json({ message: 'Email Address already in use!'});
+
+    return;
+  }
+
   const member = await this.memberService.createFromCreationDto(body as MemberCreationDTO);
 
   res.status(HttpStatus.CREATED).json({...member.toRaw()});

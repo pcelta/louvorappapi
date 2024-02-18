@@ -5,10 +5,11 @@ import UserService from './UserService';
 import UidManager from '../Util/UidManager';
 import Member from '../Entity/Member';
 import User from '../Entity/User';
+import { MemberRoleService } from './MemberRoleService';
 
 @Injectable()
 export class MemberService {
-  constructor(private readonly memberRepository: MemberRepository, private readonly userService: UserService) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly userService: UserService, private readonly memberRoleService: MemberRoleService) {}
 
   public async getMemberByEmail(email: string): Promise<Member> {
     try {
@@ -39,6 +40,7 @@ export class MemberService {
     member.user = user;
 
     await this.memberRepository.persist(member);
+    await this.memberRoleService.addDefaultRole(member);
 
     return member;
   }

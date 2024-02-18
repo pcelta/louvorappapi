@@ -1,5 +1,6 @@
-import { Entity, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, OneToOne, PrimaryKey, Property, OneToMany } from '@mikro-orm/core';
 import User from './User';
+import { MemberRole } from './MemberRole';
 
 @Entity({ tableName: 'members' })
 export default class Member {
@@ -23,6 +24,9 @@ export default class Member {
 
   @OneToOne(() => User, { joinColumn: "fk_user" })
   user: User;
+
+  @OneToMany({ entity: () => MemberRole, mappedBy: 'member', orphanRemoval: true })
+  memberRoles: Collection<MemberRole>
 
   public toRaw() {
     return {

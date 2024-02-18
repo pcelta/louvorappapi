@@ -6,6 +6,9 @@ import UserService from './Service/UserService';
 import UserRepository from './Repository/UserRepository';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { MemberRoleRepository } from './Repository/MemberRoleRepository';
+import { RoleRepository } from './Repository/RoleRepository';
+import { MemberRoleService } from './Service/MemberRoleService';
 
 @Module({
   imports: [
@@ -23,8 +26,11 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
   providers: [
     MemberService,
     UserService,
+    MemberRoleService,
     MemberRepository,
-    UserRepository
+    UserRepository,
+    MemberRoleRepository,
+    RoleRepository
   ],
   controllers: [
     MemberController

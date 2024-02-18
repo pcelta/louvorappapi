@@ -4,8 +4,8 @@ CREATE DATABASE louvorappdb;
 
 CREATE TABLE "users" (
     "id" SERIAL PRIMARY KEY,
-    "uid" VARCHAR(50) NOT NULL,
-    "email" VARCHAR(100) NOT NULL,
+    "uid" VARCHAR(50) NOT NULL UNIQUE,
+    "email" VARCHAR(100) NOT NULL UNIQUE,
     "password" VARCHAR(100) NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL
@@ -27,7 +27,7 @@ CREATE TABLE "user_accesses" (
 
 CREATE TABLE "members" (
     "id" SERIAL PRIMARY KEY,
-    "uid" VARCHAR(50) NOT NULL,
+    "uid" VARCHAR(50) NOT NULL UNIQUE,
     "fk_user" INT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "dob" DATE NULL,
@@ -38,7 +38,7 @@ CREATE TABLE "members" (
 
 CREATE TABLE "churches" (
     "id" SERIAL PRIMARY KEY,
-    "uid" VARCHAR(50) NOT NULL,
+    "uid" VARCHAR(50) NOT NULL UNIQUE,
     "name" VARCHAR(255) NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL
@@ -57,8 +57,9 @@ CREATE TABLE "church_members" (
 
 CREATE TABLE "roles" (
     "id" SERIAL PRIMARY KEY,
-    "uid" VARCHAR(50) NOT NULL,
+    "uid" VARCHAR(50) NOT NULL UNIQUE,
     "name" VARCHAR(50) NOT NULL,
+    "slug" VARCHAR(100) NOT NULL UNIQUE,
     "description" VARCHAR(255) NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL
@@ -71,17 +72,17 @@ CREATE TABLE "member_roles" (
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL,
     CONSTRAINT "fk_member_roles_members" FOREIGN KEY ("fk_member") REFERENCES "members" ("id"),
-    CONSTRAINT "fk_member_roles_roles" FOREIGN KEY ("fk_role") REFERENCES "churches" ("id")
+    CONSTRAINT "fk_member_roles_roles" FOREIGN KEY ("fk_role") REFERENCES "roles" ("id")
 );
 
-INSERT INTO "roles"("uid", "name", "description", "created_at", "updated_at")
-VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa40', 'Pastor', 'Líder espiritual da igreja', NOW(), NOW());
+INSERT INTO "roles"("uid", "name", "slug", "description", "created_at", "updated_at")
+VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa40', 'Pastor', 'pastor', 'Líder espiritual da igreja', NOW(), NOW());
 
-INSERT INTO "roles"("uid", "name", "description", "created_at", "updated_at")
-VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa41', 'Admin', 'Super usuário com acesso a todas as funcionalidades', NOW(), NOW());
+INSERT INTO "roles"("uid", "name", "slug", "description", "created_at", "updated_at")
+VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa41', 'Admin', 'admin', 'Super usuário com acesso a todas as funcionalidades', NOW(), NOW());
 
-INSERT INTO "roles"("uid", "name", "description", "created_at", "updated_at")
-VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa42', 'Membro', 'Membro comum', NOW(), NOW());
+INSERT INTO "roles"("uid", "name", "slug", "description", "created_at", "updated_at")
+VALUES('rl-baf99b5b-b749-4cc8-b822-77ed1e64fa42', 'Membro', 'member',  'Membro comum', NOW(), NOW());
 
 INSERT INTO users(uid, email, "password", created_at, updated_at) VALUES('uid1', 'pcelta@pcelta.com', 'pass',NOW(), NOW());
 INSERT INTO members(uid, fk_user, "name", dob, created_at, updated_at) VALUES('uid10', 1, 'Pedro Ribeiro', '1987-02-09',NOW(), NOW());
