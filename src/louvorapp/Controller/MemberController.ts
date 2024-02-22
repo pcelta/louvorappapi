@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Res, Param, HttpStatus, Body } from '@nestjs/common';
 import { Validate } from "joi-typescript-validator"
 import { Response } from 'express';
-import { MemberService } from './Service/MemberService';
-import MemberCreationDTO from './DTO/MemberCreationDTO';
+import { MemberService } from '../Service/MemberService';
+import MemberCreationDTO from '../DTO/MemberCreationDTO';
 
 @Controller('member')
 export class MemberController {

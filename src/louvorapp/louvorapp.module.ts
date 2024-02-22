@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MemberController } from './member.controller';
 import { MemberService } from './Service/MemberService';
 import { MemberRepository } from './Repository/MemberRepository';
 import UserService from './Service/UserService';
@@ -9,6 +8,9 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { MemberRoleRepository } from './Repository/MemberRoleRepository';
 import { RoleRepository } from './Repository/RoleRepository';
 import { MemberRoleService } from './Service/MemberRoleService';
+import ChurchRepository from './Repository/ChurchRepository';
+import { ChurchService } from './Service/ChurchService';
+import { MemberController } from './Controller/MemberController';
 
 @Module({
   imports: [
@@ -27,13 +29,16 @@ import { MemberRoleService } from './Service/MemberRoleService';
     MemberService,
     UserService,
     MemberRoleService,
+    ChurchService,
+
     MemberRepository,
     UserRepository,
     MemberRoleRepository,
-    RoleRepository
+    RoleRepository,
+    ChurchRepository,
   ],
   controllers: [
-    MemberController
+    MemberController,
   ]
 })
 export class LouvorappModule {}
