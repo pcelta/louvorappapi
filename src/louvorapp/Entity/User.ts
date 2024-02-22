@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, OneToOne } from '@mikro-orm/core';
 import Member from './Member';
+import UserAccess from './UserAccess';
 
 @Entity({ tableName: 'users'})
 export default class User {
@@ -24,10 +25,20 @@ export default class User {
   @OneToOne({entity: () => Member, mappedBy: member => member.user})
   member: Member;
 
-  public toRaw() {
-    return {
+  @OneToOne({entity: () => UserAccess, mappedBy: access => access.user})
+  access: UserAccess;
+
+  public toRaw(includeAccesses: boolean) {
+    let raw = {
       uid: this.uid,
-      email: this.email
+      email: this.email,
+      access: null
     };
+
+    if (includeAccesses) {
+      raw.access = this.access.toRaw()
+    }
+
+    return raw;
   }
 }

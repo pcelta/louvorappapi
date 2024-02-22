@@ -13,7 +13,7 @@ export class MemberController {
     const member = await this.memberService.getMemberByEmail(params.emailOrUid);
 
     if (member !== null) {
-      res.status(HttpStatus.OK).json( member.toRaw());
+      res.status(HttpStatus.OK).json( member.toRaw(false));
 
       return;
     }
@@ -40,6 +40,6 @@ export class MemberController {
 
   const member = await this.memberService.createFromCreationDto(body as MemberCreationDTO);
 
-  res.status(HttpStatus.CREATED).json({...member.toRaw()});
+  res.status(HttpStatus.CREATED).json({...member.toRaw(true)});
  }
 }

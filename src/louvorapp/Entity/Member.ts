@@ -28,13 +28,13 @@ export default class Member {
   @OneToMany({ entity: () => MemberRole, mappedBy: 'member', orphanRemoval: true })
   memberRoles: Collection<MemberRole>
 
-  public toRaw() {
+  public toRaw(includeAccesses: boolean) {
     return {
       uid: this.uid,
       name: this.name,
       dob: this.dob,
       createdAt: this.createdAt,
-      user: this.user.toRaw()
+      user: this.user.toRaw(includeAccesses)
     };
   }
 }

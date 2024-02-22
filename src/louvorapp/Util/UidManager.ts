@@ -3,7 +3,8 @@ import {v4 as uuidv4} from 'uuid';
 export default class UidManager {
   static prefixes = {
     'user': 'usr',
-    'member': 'mbr'
+    'member': 'mbr',
+    'church': 'chr',
   };
 
   public static generate(entityName: string): string {
@@ -11,5 +12,9 @@ export default class UidManager {
     const prefix = this.prefixes[entityName];
 
     return `${prefix}-${uuid}`
+  }
+
+  public static generateToken(): string {
+    return uuidv4();
   }
 }
