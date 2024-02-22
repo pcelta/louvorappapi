@@ -3,17 +3,18 @@ import { Validate } from "joi-typescript-validator"
 import { Response } from 'express';
 import { MemberService } from '../Service/MemberService';
 import MemberCreationDTO from '../DTO/MemberCreationDTO';
+import AuthorizationService from '../Service/AuthService';
 
 @Controller('member')
 export class MemberController {
-  constructor(private memberService: MemberService) {}
+  constructor(private memberService: MemberService, private readonly authService: AuthorizationService) {}
 
   @Get(':emailOrUid')
   async get(@Param() params: any, @Res() res: Response) {
     const member = await this.memberService.getMemberByEmail(params.emailOrUid);
 
     if (member !== null) {
-      res.status(HttpStatus.OK).json( member.toRaw(false));
+      res.status(HttpStatus.OK).json( member.toRaw());
 
       return;
     }
@@ -40,6 +41,6 @@ export class MemberController {
 
   const member = await this.memberService.createFromCreationDto(body as MemberCreationDTO);
 
-  res.status(HttpStatus.CREATED).json({...member.toRaw(true)});
+  res.status(HttpStatus.CREATED).json(member.toRaw());
  }
 }

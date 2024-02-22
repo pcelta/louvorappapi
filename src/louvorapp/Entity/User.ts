@@ -1,6 +1,7 @@
 import { Entity, PrimaryKey, Property, OneToOne } from '@mikro-orm/core';
 import Member from './Member';
 import UserAccess from './UserAccess';
+import * as bcrypt from 'bcrypt';
 
 @Entity({ tableName: 'users'})
 export default class User {
@@ -28,16 +29,16 @@ export default class User {
   @OneToOne({entity: () => UserAccess, mappedBy: access => access.user})
   access: UserAccess;
 
-  public toRaw(includeAccesses: boolean) {
-    let raw = {
-      uid: this.uid,
-      email: this.email,
-      access: null
-    };
+  public async setPassword(password: string) {
+    const saltOrRounds = 15;
+    const hashedPassword = await bcrypt.hash(password, saltOrRounds);
+    this.password = hashedPassword;
+  }
 
-    if (includeAccesses) {
-      raw.access = this.access.toRaw()
-    }
+  public toRaw() {
+    let raw = {
+      email: this.email,
+    };
 
     return raw;
   }

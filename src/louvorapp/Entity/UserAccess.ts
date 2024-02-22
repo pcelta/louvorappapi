@@ -19,15 +19,6 @@ export default class UserAccess {
   @Property({ type: 'date', fieldName: 'access_token_expires_at' })
   accessTokenExpiresdAt: Date;
 
-  @Property({ type: 'text', fieldName: 'refresh_token' })
-  refreshToken: string;
-
-  @Property({ type: 'date', fieldName: 'refresh_token_created_at' })
-  refreshTokenCreatedAt: Date;
-
-  @Property({ type: 'date', fieldName: 'refresh_token_expires_at' })
-  refreshTokenExpiresdAt: Date;
-
   @Property({ type: 'date', fieldName: 'created_at' })
   createdAt: Date;
 
@@ -36,13 +27,4 @@ export default class UserAccess {
 
   @OneToOne(() => User, { joinColumn: "fk_user" })
   user: User;
-
-  public toRaw() {
-    return {
-      access_token: this.accessToken,
-      acces_token_expires_at: this.accessTokenExpiresdAt,
-      refresh_token: this.refreshToken,
-      refresh_token_expires_at: this.refreshTokenExpiresdAt,
-    };
-  }
 }

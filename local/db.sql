@@ -17,9 +17,6 @@ CREATE TABLE "user_accesses" (
     "access_token" VARCHAR(100) NOT NULL,
     "access_token_expires_at" timestamp(3) NOT NULL,
     "access_token_created_at" timestamp(3) NOT NULL,
-    "refresh_token" VARCHAR(100) NOT NULL,
-    "refresh_token_expires_at" timestamp(3) NOT NULL,
-    "refresh_token_created_at" timestamp(3) NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL,
     CONSTRAINT "fk_user_accesses_users" FOREIGN KEY ("fk_user") REFERENCES "users" ("id")
