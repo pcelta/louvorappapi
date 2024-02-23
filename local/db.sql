@@ -7,6 +7,8 @@ CREATE TABLE "users" (
     "uid" VARCHAR(50) NOT NULL UNIQUE,
     "email" VARCHAR(100) NOT NULL UNIQUE,
     "password" VARCHAR(100) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "dob" DATE NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL
 );
@@ -22,17 +24,6 @@ CREATE TABLE "user_accesses" (
     CONSTRAINT "fk_user_accesses_users" FOREIGN KEY ("fk_user") REFERENCES "users" ("id")
 );
 
-CREATE TABLE "members" (
-    "id" SERIAL PRIMARY KEY,
-    "uid" VARCHAR(50) NOT NULL UNIQUE,
-    "fk_user" INT NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "dob" DATE NULL,
-    "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" timestamp(3) NOT NULL,
-    CONSTRAINT "fk_members_users" FOREIGN KEY ("fk_user") REFERENCES "users" ("id")
-);
-
 CREATE TABLE "churches" (
     "id" SERIAL PRIMARY KEY,
     "uid" VARCHAR(50) NOT NULL UNIQUE,
@@ -42,15 +33,15 @@ CREATE TABLE "churches" (
     "updated_at" timestamp(3) NOT NULL
 );
 
-CREATE TABLE "church_members" (
+CREATE TABLE "members" (
     "id" SERIAL PRIMARY KEY,
+    "uid" VARCHAR(50) NOT NULL UNIQUE,
+    "fk_user" INT NOT NULL,
     "fk_church" INT NOT NULL,
-    "fk_member" INT NOT NULL,
-    "is_active" BOOLEAN NOT NULL,
     "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" timestamp(3) NOT NULL,
-    CONSTRAINT "fk_church_members_members" FOREIGN KEY ("fk_member") REFERENCES "members" ("id"),
-    CONSTRAINT "fk_church_members_churches" FOREIGN KEY ("fk_church") REFERENCES "churches" ("id")
+    CONSTRAINT "fk_members_users" FOREIGN KEY ("fk_user") REFERENCES "users" ("id"),
+    CONSTRAINT "fk_members_churches" FOREIGN KEY ("fk_church") REFERENCES "churches" ("id")
 );
 
 CREATE TABLE "roles" (

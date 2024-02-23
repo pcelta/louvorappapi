@@ -1,5 +1,4 @@
-import { Collection, Entity, OneToOne, PrimaryKey, Property, OneToMany, ArrayCollection } from '@mikro-orm/core';
-import ChurchMember from './ChurchMember';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity({ tableName: 'churches' })
 export default class Church {
