@@ -1,13 +1,12 @@
-import { Controller, Get, Post, Res, Param, HttpStatus, Body } from '@nestjs/common';
+import { Controller, Get, Post, Res, Param, HttpStatus, Body, UseGuards } from '@nestjs/common';
 import { Validate } from "joi-typescript-validator"
 import { Response } from 'express';
 import { MemberService } from '../Service/MemberService';
 import MemberCreationDTO from '../DTO/MemberCreationDTO';
-import AuthorizationService from '../Service/AuthService';
 
 @Controller('member')
 export class MemberController {
-  constructor(private memberService: MemberService, private readonly authService: AuthorizationService) {}
+  constructor(private memberService: MemberService) {}
 
   @Get(':emailOrUid')
   async get(@Param() params: any, @Res() res: Response) {

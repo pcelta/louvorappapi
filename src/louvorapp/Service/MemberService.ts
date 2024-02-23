@@ -44,4 +44,8 @@ export class MemberService {
 
     return member;
   }
+
+  public async getMemberByUserUidAndAccessToken(userUid: string, accessToken: string): Promise<Member> {
+    return await this.memberRepository.findByUserUidAndAccessToken(userUid, accessToken);
+  }
 }

@@ -18,4 +18,15 @@ export class MemberRepository extends AbstractRepository {
     delete member['id'];
     this.em.persist(member).flush();
   }
+
+  public async findByUserUidAndAccessToken(uid: string, accessToken: string): Promise<Member> {
+    const queryBuilder = this.em.createQueryBuilder(Member, 'm');
+    const member = await queryBuilder.select(['m.*', 'u.*'], true)
+      .join('m.user', 'u')
+      .join('u.access', 'ua')
+      .where({ 'u.uid': uid, 'ua.access_token':  accessToken })
+      .getSingleResult();
+
+    return member;
+  }
 }

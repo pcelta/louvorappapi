@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MemberService } from './Service/MemberService';
 import { MemberRepository } from './Repository/MemberRepository';
 import UserService from './Service/UserService';
@@ -15,9 +16,12 @@ import { JwtModule } from '@nestjs/jwt';
 import AuthService from './Service/AuthService';
 import UserAccessRepository from './Repository/UserAccessRepository';
 import { AuthController } from './Controller/AuthController';
+import { JwtToMemberPipe } from './Util/JwtToMemberPipe';
+import { ChurchController } from './Controller/ChurchController';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
       entities: ['./dist/louvorapp/Entity'],
       entitiesTs: ['./src/louvorapp/Entity'],
@@ -28,9 +32,12 @@ import { AuthController } from './Controller/AuthController';
       port: 5432,
       driver: PostgreSqlDriver
     }),
-    JwtModule.register({ secret: '!louvorapp-secrete123456789@@!', signOptions: { expiresIn: `${60 * 60}s` } }),
+    // add this secret to .env
+    JwtModule.register({ secret: '!louvorapp-secrete123456789@@!', signOptions: { expiresIn: '5 days' } }),
   ],
   providers: [
+    JwtToMemberPipe,
+
     MemberService,
     UserService,
     MemberRoleService,
@@ -46,6 +53,7 @@ import { AuthController } from './Controller/AuthController';
   controllers: [
     MemberController,
     AuthController,
+    ChurchController,
   ]
 })
 export class LouvorappModule {}

@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 export default class AuthService {
   constructor(private readonly userRepository: UserRepository, private readonly accessRepository: UserAccessRepository, private readonly jwtService: JwtService) {}
 
-  public createAccess(user: User): UserAccess {
+  public async createAccess(user: User): Promise<UserAccess> {
     let access = new UserAccess();
     access.user = user;
     access.accessTokenExpiresdAt = this.createTokenExpireDate(UserAccess.ACCESS_TOKEN_DAYS_TO_EXPIRE);
@@ -23,6 +23,8 @@ export default class AuthService {
     access.updatedAt = new Date();
 
     user.access = access;
+
+    await this.accessRepository.persist(access);
 
     return access;
   }
