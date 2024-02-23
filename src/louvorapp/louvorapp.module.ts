@@ -11,13 +11,14 @@ import { RoleRepository } from './Repository/RoleRepository';
 import { MemberRoleService } from './Service/MemberRoleService';
 import ChurchRepository from './Repository/ChurchRepository';
 import { ChurchService } from './Service/ChurchService';
-import { MemberController } from './Controller/MemberController';
+import { UserController } from './Controller/UserController';
 import { JwtModule } from '@nestjs/jwt';
 import AuthService from './Service/AuthService';
 import UserAccessRepository from './Repository/UserAccessRepository';
 import { AuthController } from './Controller/AuthController';
 import { JwtToMemberPipe } from './Util/JwtToMemberPipe';
 import { ChurchController } from './Controller/ChurchController';
+import { JwtToUserPipe } from './Util/JwtToUserPiper';
 
 @Module({
   imports: [
@@ -36,13 +37,17 @@ import { ChurchController } from './Controller/ChurchController';
     JwtModule.register({ secret: '!louvorapp-secrete123456789@@!', signOptions: { expiresIn: '5 days' } }),
   ],
   providers: [
+    JwtToUserPipe,
     JwtToMemberPipe,
 
+    // services
     MemberService,
     UserService,
     MemberRoleService,
     ChurchService,
     AuthService,
+
+    // repositories
     MemberRepository,
     UserRepository,
     MemberRoleRepository,
@@ -51,7 +56,7 @@ import { ChurchController } from './Controller/ChurchController';
     UserAccessRepository,
   ],
   controllers: [
-    MemberController,
+    UserController,
     AuthController,
     ChurchController,
   ]

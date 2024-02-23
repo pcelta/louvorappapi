@@ -1,6 +1,7 @@
-import { Collection, Entity, OneToOne, PrimaryKey, Property, OneToMany } from '@mikro-orm/core';
+import { Collection, Entity, OneToOne, PrimaryKey, Property, OneToMany, ManyToOne } from '@mikro-orm/core';
 import User from './User';
 import { MemberRole } from './MemberRole';
+import Church from './Church';
 
 @Entity({ tableName: 'members' })
 export default class Member {
@@ -9,12 +10,6 @@ export default class Member {
 
   @Property({ type: 'text' })
   uid: string
-
-  @Property({ type: 'text' })
-  name: string
-
-  @Property({ type: 'date' })
-  dob: Date
 
   @Property({ type: 'date', fieldName: 'created_at' })
   createdAt: Date
@@ -28,11 +23,12 @@ export default class Member {
   @OneToMany({ entity: () => MemberRole, mappedBy: 'member', orphanRemoval: true })
   memberRoles: Collection<MemberRole>
 
+  @ManyToOne({ joinColumn: 'fk_church', entity: () => Member})
+  church: Church;
+
   public toRaw() {
     return {
       uid: this.uid,
-      name: this.name,
-      dob: this.dob,
       createdAt: this.createdAt,
       user: this.user.toRaw()
     };

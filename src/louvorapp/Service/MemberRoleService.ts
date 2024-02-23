@@ -11,8 +11,8 @@ import { MemberRoleRepository } from '../Repository/MemberRoleRepository';
 export class MemberRoleService {
   constructor(private readonly roleRepository: RoleRepository, private readonly memberRoleRepository: MemberRoleRepository) {}
 
-  public async addDefaultRole(member: Member): Promise<void> {
-    let defaultRole = await this.roleRepository.findBySlug(Role.ROLE_MEMBER);
+  public async addAdminRole(member: Member): Promise<void> {
+    let defaultRole = await this.roleRepository.findBySlug(Role.ROLE_ADMIN);
 
     let memberRole = new MemberRole();
     memberRole.member = member;

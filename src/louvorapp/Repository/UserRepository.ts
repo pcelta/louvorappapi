@@ -19,4 +19,14 @@ export default class UserRepository extends AbstractRepository {
 
     return user;
   }
+
+  public async findByUserUidAndAccessToken(uid: string, accessToken: string): Promise<User> {
+    const queryBuilder = this.em.createQueryBuilder(User, 'u');
+    const user = await queryBuilder.select(['u.*'], true)
+      .join('u.access', 'ua')
+      .where({ 'u.uid': uid, 'ua.access_token':  accessToken })
+      .getSingleResult();
+
+    return user;
+  }
 }

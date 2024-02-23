@@ -9,16 +9,22 @@ export default class User {
   id!: number;
 
   @Property({ type: 'text' })
-  uid: string
+  uid: string;
 
   @Property({ type: 'text' })
-  email: string
+  email: string;
 
   @Property({ type: 'text' })
-  password: string
+  password: string;
+
+  @Property({ type: 'text' })
+  name: string;
+
+  @Property({ type: 'date' })
+  dob: Date;
 
   @Property({ type: 'date', fieldName: 'created_at' })
-  createdAt: Date
+  createdAt: Date;
 
   @Property({ onUpdate: () => new Date(), fieldName: 'updated_at' })
   updatedAt: Date;
@@ -38,6 +44,9 @@ export default class User {
   public toRaw() {
     let raw = {
       email: this.email,
+      dob: this.dob,
+      uid: this.uid,
+      name: this.name,
     };
 
     return raw;
