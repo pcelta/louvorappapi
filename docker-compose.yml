@@ -6,4 +6,4 @@ services:
     environment:
       POSTGRES_PASSWORD: "rock4me!!"
     ports:
-      - "5432:5432"
+      - "5436:5432"

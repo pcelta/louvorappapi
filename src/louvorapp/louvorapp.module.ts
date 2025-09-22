@@ -26,15 +26,15 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     MikroOrmModule.forRoot({
       entities: ['./dist/louvorapp/Entity'],
       entitiesTs: ['./src/louvorapp/Entity'],
-      dbName: 'louvorappdb',
-      user: 'postgres',
-      password: 'rock4me!!',
-      host: 'localhost',
-      port: 5432,
+      dbName: process.env.DATABASE_NAME,
+      user: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      host: process.env.DATABASE_HOST,
+      port: parseInt(process.env.DATABASE_PORT),
       driver: PostgreSqlDriver
     }),
     // add this secret to .env
-    JwtModule.register({ secret: '!louvorapp-secrete123456789@@!', signOptions: { expiresIn: '5 days' } }),
+    JwtModule.register({ secret: process.env.JWT_SECRET, signOptions: { expiresIn: '5 days' } }),
   ],
   providers: [
     JwtToUserPipe,
