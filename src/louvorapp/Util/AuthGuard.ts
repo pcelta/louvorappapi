@@ -11,7 +11,11 @@ import AuthService from '../Service/AuthService';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private configService: ConfigService, private authService: AuthService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+    private authService: AuthService,
+  ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -21,15 +25,14 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: this.configService.get('JWT_SECRET')
-        }
-      );
-    } catch(error) {
+      await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+    } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new UnauthorizedException('Token Expired. Request a new access token via authentication endpoint');
+        throw new UnauthorizedException(
+          'Token Expired. Request a new access token via authentication endpoint',
+        );
       }
 
       throw new UnauthorizedException();

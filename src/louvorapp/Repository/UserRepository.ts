@@ -8,23 +8,28 @@ export default class UserRepository extends AbstractRepository {
     delete user['id'];
     this.em.persist(user).flush();
 
-    return null
+    return null;
   }
 
   public async findByEmail(email: string): Promise<User> {
     const queryBuilder = this.em.createQueryBuilder(User);
-    const user = await queryBuilder.select(['*'], true)
-      .where({ 'email': email })
+    const user = await queryBuilder
+      .select(['*'], true)
+      .where({ email: email })
       .getSingleResult();
 
     return user;
   }
 
-  public async findByUserUidAndAccessToken(uid: string, accessToken: string): Promise<User> {
+  public async findByUserUidAndAccessToken(
+    uid: string,
+    accessToken: string,
+  ): Promise<User> {
     const queryBuilder = this.em.createQueryBuilder(User, 'u');
-    const user = await queryBuilder.select(['u.*'], true)
+    const user = await queryBuilder
+      .select(['u.*'], true)
       .join('u.access', 'ua')
-      .where({ 'u.uid': uid, 'ua.access_token':  accessToken })
+      .where({ 'u.uid': uid, 'ua.access_token': accessToken })
       .getSingleResult();
 
     return user;

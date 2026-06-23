@@ -1,4 +1,11 @@
-import { Required, NotEmpty, MaxLength, MinLength, DateString, Email } from "joi-typescript-validator"
+import {
+  Required,
+  NotEmpty,
+  MaxLength,
+  MinLength,
+  DateString,
+  Email,
+} from 'joi-typescript-validator';
 
 export default class UserCreationDTO {
   @Required()
@@ -12,7 +19,7 @@ export default class UserCreationDTO {
 
   @Required()
   @NotEmpty()
-  @DateString("YYYY-MM-DD")
+  @DateString('YYYY-MM-DD')
   public dob: string;
 
   @Required()

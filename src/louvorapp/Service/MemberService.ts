@@ -10,7 +10,11 @@ import Church from '../Entity/Church';
 
 @Injectable()
 export class MemberService {
-  constructor(private readonly memberRepository: MemberRepository, private readonly userService: UserService, private readonly memberRoleService: MemberRoleService) {}
+  constructor(
+    private readonly memberRepository: MemberRepository,
+    private readonly userService: UserService,
+    private readonly memberRoleService: MemberRoleService,
+  ) {}
 
   public async getMemberByEmail(email: string): Promise<Member> {
     try {
@@ -18,18 +22,24 @@ export class MemberService {
 
       return member;
     } catch (e) {
-      return null
+      return null;
     }
   }
 
-  public async getMemberByUserUidAndAccessToken(userUid: string, accessToken: string): Promise<Member> {
-    return await this.memberRepository.findByUserUidAndAccessToken(userUid, accessToken);
+  public async getMemberByUserUidAndAccessToken(
+    userUid: string,
+    accessToken: string,
+  ): Promise<Member> {
+    return await this.memberRepository.findByUserUidAndAccessToken(
+      userUid,
+      accessToken,
+    );
   }
 
   public async createAdmin(user: User, church: Church): Promise<Member> {
     const member = new Member();
     member.uid = UidManager.generate('member');
-    member.church = church
+    member.church = church;
     member.user = user;
     member.createdAt = new Date();
     member.updatedAt = new Date();

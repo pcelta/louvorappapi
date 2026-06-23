@@ -6,7 +6,8 @@ import Member from '../Entity/Member';
 export class MemberRepository extends AbstractRepository {
   public async findByEmail(email: string): Promise<Member> {
     const queryBuilder = this.em.createQueryBuilder(Member, 'm');
-    const member = await queryBuilder.select(['m.*'], true)
+    const member = await queryBuilder
+      .select(['m.*'], true)
       .join('m.user', 'u')
       .where({ 'u.email': email })
       .getSingleResult();
@@ -19,12 +20,16 @@ export class MemberRepository extends AbstractRepository {
     this.em.persist(member).flush();
   }
 
-  public async findByUserUidAndAccessToken(uid: string, accessToken: string): Promise<Member> {
+  public async findByUserUidAndAccessToken(
+    uid: string,
+    accessToken: string,
+  ): Promise<Member> {
     const queryBuilder = this.em.createQueryBuilder(Member, 'm');
-    const member = await queryBuilder.select(['m.*', 'u.*'], true)
+    const member = await queryBuilder
+      .select(['m.*', 'u.*'], true)
       .join('m.user', 'u')
       .join('u.access', 'ua')
-      .where({ 'u.uid': uid, 'ua.access_token':  accessToken })
+      .where({ 'u.uid': uid, 'ua.access_token': accessToken })
       .getSingleResult();
 
     return member;

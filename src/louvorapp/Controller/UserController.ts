@@ -1,5 +1,14 @@
-import { Controller, Get, Post, Res, Param, HttpStatus, Body, UseGuards } from '@nestjs/common';
-import { Validate } from "joi-typescript-validator"
+import {
+  Controller,
+  Get,
+  Post,
+  Res,
+  Param,
+  HttpStatus,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
+import { Validate } from 'joi-typescript-validator';
 import { Response } from 'express';
 import MemberCreationDTO from '../DTO/UserCreationDTO';
 import UserService from '../Service/UserService';
@@ -19,28 +28,34 @@ export class UserController {
       return;
     }
 
-    res.status(HttpStatus.NOT_FOUND).json({ message: 'User Not Found!'});
- }
-
- @Post()
- async create(@Body() body: UserCreationDTO, @Res() res: Response) {
-  const validation = await Validate(UserCreationDTO, body);
-  if (validation.error) {
-    res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({ message: validation.error.message});
-
-    return;
+    res.status(HttpStatus.NOT_FOUND).json({ message: 'User Not Found!' });
   }
 
-  const existingUser = await this.userService.getByEmail(body.email);
+  @Post()
+  async create(@Body() body: UserCreationDTO, @Res() res: Response) {
+    const validation = await Validate(UserCreationDTO, body);
+    if (validation.error) {
+      res
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .json({ message: validation.error.message });
 
-  if (existingUser !== null) {
-    res.status(HttpStatus.BAD_REQUEST).json({ message: 'Email Address already in use!'});
+      return;
+    }
 
-    return;
+    const existingUser = await this.userService.getByEmail(body.email);
+
+    if (existingUser !== null) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: 'Email Address already in use!' });
+
+      return;
+    }
+
+    const user = await this.userService.createFromCreationDto(
+      body as UserCreationDTO,
+    );
+
+    res.status(HttpStatus.CREATED).json(user.toRaw());
   }
-
-  const user = await this.userService.createFromCreationDto(body as UserCreationDTO);
-
-  res.status(HttpStatus.CREATED).json(user.toRaw());
- }
 }

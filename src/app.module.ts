@@ -4,10 +4,7 @@ import { LouvorappModule } from './louvorapp/louvorapp.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    LouvorappModule
-  ],
+  imports: [ConfigModule.forRoot(), LouvorappModule],
   controllers: [AppController],
   providers: [],
 })

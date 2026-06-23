@@ -8,10 +8,15 @@ import { MemberService } from './MemberService';
 
 @Injectable()
 export class ChurchService {
-  constructor(private readonly churchRepository: ChurchRepository, private memberService: MemberService) {}
+  constructor(
+    private readonly churchRepository: ChurchRepository,
+    private memberService: MemberService,
+  ) {}
 
-  public async createFromCreationDto(churchCreationDto: ChurchCreationDTO, creator: User): Promise<Church> {
-
+  public async createFromCreationDto(
+    churchCreationDto: ChurchCreationDTO,
+    creator: User,
+  ): Promise<Church> {
     const uid = UidManager.generate('church');
     let church = new Church();
     church.name = churchCreationDto.name;

@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import User from "../Entity/User";
-import UserAccess from "../Entity/UserAccess";
-import UidManager from "../Util/UidManager";
+import User from '../Entity/User';
+import UserAccess from '../Entity/UserAccess';
+import UidManager from '../Util/UidManager';
 import UserRepository from '../Repository/UserRepository';
 import UserAccessRepository from '../Repository/UserAccessRepository';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export default class AuthService {
-  constructor(private readonly userRepository: UserRepository, private readonly accessRepository: UserAccessRepository, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly accessRepository: UserAccessRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   public async createAccess(user: User): Promise<UserAccess> {
     let access = new UserAccess();
     access.user = user;
-    access.accessTokenExpiresdAt = this.createTokenExpireDate(UserAccess.ACCESS_TOKEN_DAYS_TO_EXPIRE);
+    access.accessTokenExpiresdAt = this.createTokenExpireDate(
+      UserAccess.ACCESS_TOKEN_DAYS_TO_EXPIRE,
+    );
     access.accessToken = UidManager.generateToken();
 
     access.accessTokenCreatedAt = new Date();
@@ -31,7 +37,7 @@ export default class AuthService {
 
   private createTokenExpireDate(daysToAdd: number): Date {
     let expireDate = new Date();
-    expireDate.setDate(expireDate.getDate() + daysToAdd)
+    expireDate.setDate(expireDate.getDate() + daysToAdd);
 
     return expireDate;
   }

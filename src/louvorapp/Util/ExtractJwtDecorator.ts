@@ -7,5 +7,5 @@ export const ExtractJwtData = createParamDecorator(
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
     return token;
-  }
+  },
 );

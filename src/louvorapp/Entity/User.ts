@@ -3,7 +3,7 @@ import Member from './Member';
 import UserAccess from './UserAccess';
 import * as bcrypt from 'bcrypt';
 
-@Entity({ tableName: 'users'})
+@Entity({ tableName: 'users' })
 export default class User {
   @PrimaryKey()
   id!: number;
@@ -29,10 +29,10 @@ export default class User {
   @Property({ onUpdate: () => new Date(), fieldName: 'updated_at' })
   updatedAt: Date;
 
-  @OneToOne({entity: () => Member, mappedBy: member => member.user})
+  @OneToOne({ entity: () => Member, mappedBy: (member) => member.user })
   member: Member;
 
-  @OneToOne({entity: () => UserAccess, mappedBy: access => access.user})
+  @OneToOne({ entity: () => UserAccess, mappedBy: (access) => access.user })
   access: UserAccess;
 
   public async setPassword(password: string) {

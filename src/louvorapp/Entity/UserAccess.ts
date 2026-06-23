@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property, OneToOne } from '@mikro-orm/core';
 import Member from './Member';
 import User from './User';
 
-@Entity({ tableName: 'user_accesses'})
+@Entity({ tableName: 'user_accesses' })
 export default class UserAccess {
   public static REFRESH_TOKEN_DAYS_TO_EXPIRE = 15;
   public static ACCESS_TOKEN_DAYS_TO_EXPIRE = 5;
@@ -25,6 +25,6 @@ export default class UserAccess {
   @Property({ type: 'date', fieldName: 'updated_at' })
   updatedAt: Date;
 
-  @OneToOne(() => User, { joinColumn: "fk_user" })
+  @OneToOne(() => User, { joinColumn: 'fk_user' })
   user: User;
 }

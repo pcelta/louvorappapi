@@ -1,4 +1,9 @@
-import { ArgumentMetadata, Injectable, PipeTransform, UnauthorizedException } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  Injectable,
+  PipeTransform,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MemberService } from '../Service/MemberService';
@@ -8,22 +13,22 @@ export class JwtToMemberPipe implements PipeTransform {
   public constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly memberService: MemberService
-  ) { }
+    private readonly memberService: MemberService,
+  ) {}
 
   public async transform(token: string, _metadata: ArgumentMetadata) {
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: this.configService.get('JWT_SECRET')
-        }
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+
+      const member = await this.memberService.getMemberByUserUidAndAccessToken(
+        payload.uid,
+        payload.access_token,
       );
 
-      const member = await this.memberService.getMemberByUserUidAndAccessToken(payload.uid, payload.access_token);
-
       if (!member) {
-        throw new UnauthorizedException("Invalid Member");
+        throw new UnauthorizedException('Invalid Member');
       }
 
       return member;
@@ -32,7 +37,7 @@ export class JwtToMemberPipe implements PipeTransform {
         throw error;
       }
 
-      throw new UnauthorizedException("Invalid Token");
+      throw new UnauthorizedException('Invalid Token');
     }
   }
 }

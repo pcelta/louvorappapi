@@ -9,7 +9,10 @@ import { MemberRoleRepository } from '../Repository/MemberRoleRepository';
 
 @Injectable()
 export class MemberRoleService {
-  constructor(private readonly roleRepository: RoleRepository, private readonly memberRoleRepository: MemberRoleRepository) {}
+  constructor(
+    private readonly roleRepository: RoleRepository,
+    private readonly memberRoleRepository: MemberRoleRepository,
+  ) {}
 
   public async addAdminRole(member: Member): Promise<void> {
     let defaultRole = await this.roleRepository.findBySlug(Role.ROLE_ADMIN);

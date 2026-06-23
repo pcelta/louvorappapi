@@ -1,8 +1,7 @@
 import { Entity, PrimaryKey, Property, OneToOne } from '@mikro-orm/core';
 
-@Entity({tableName: 'roles'})
+@Entity({ tableName: 'roles' })
 export class Role {
-
   public static ROLE_MEMBER = 'member';
   public static ROLE_ADMIN = 'admin';
 

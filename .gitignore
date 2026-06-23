@@ -398,3 +398,6 @@ Temporary Items
 dist
 .webpack
 .serverless/**/*.zip
+
+# TypeScript incremental build cache
+*.tsbuildinfo

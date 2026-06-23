@@ -31,10 +31,13 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
       password: process.env.DATABASE_PASSWORD,
       host: process.env.DATABASE_HOST,
       port: parseInt(process.env.DATABASE_PORT),
-      driver: PostgreSqlDriver
+      driver: PostgreSqlDriver,
     }),
     // add this secret to .env
-    JwtModule.register({ secret: process.env.JWT_SECRET, signOptions: { expiresIn: '5 days' } }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5 days' },
+    }),
   ],
   providers: [
     JwtToUserPipe,
@@ -55,10 +58,6 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     ChurchRepository,
     UserAccessRepository,
   ],
-  controllers: [
-    UserController,
-    AuthController,
-    ChurchController,
-  ]
+  controllers: [UserController, AuthController, ChurchController],
 })
 export class LouvorappModule {}
