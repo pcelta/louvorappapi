@@ -35,7 +35,7 @@ export default class Member {
   })
   memberRoles: Collection<MemberRole>;
 
-  @ManyToOne({ joinColumn: 'fk_church', entity: () => Member })
+  @ManyToOne({ joinColumn: 'fk_church', entity: () => Church })
   church: Church;
 
   public toRaw() {

@@ -17,11 +17,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:create": "mikro-orm migration:create",
+    "migration:up": "mikro-orm migration:up",
+    "migration:down": "mikro-orm migration:down",
+    "migration:list": "mikro-orm migration:list",
+    "migration:pending": "mikro-orm migration:pending",
+    "migration:fresh": "mikro-orm migration:fresh"
   },
   "dependencies": {
     "@mikro-orm/cli": "^6.6.15",
     "@mikro-orm/core": "^6.6.15",
+    "@mikro-orm/migrations": "^6.6.15",
     "@mikro-orm/nestjs": "^6.1.2",
     "@mikro-orm/postgresql": "^6.6.15",
     "@mikro-orm/reflection": "^6.6.15",

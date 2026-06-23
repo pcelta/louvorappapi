@@ -1,10 +1,9 @@
 services:
   postgres:
     image: postgres
-    volumes:
-      - ./local/db.sql:/docker-entrypoint-initdb.d/01-db.sql
     environment:
       POSTGRES_PASSWORD: "rock4me!!"
+      POSTGRES_DB: "louvorappdb"
     ports:
       - "5436:5432"
     healthcheck:
@@ -17,6 +16,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    # Build the schema from migrations on boot (replaces the old db.sql init),
+    # then start the dev server with hot reload.
+    command: sh -c "npm run migration:up && npm run start:dev:docker"
     environment:
       DATABASE_NAME: "louvorappdb"
       DATABASE_USER: "postgres"
