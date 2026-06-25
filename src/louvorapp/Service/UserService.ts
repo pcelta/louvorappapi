@@ -30,6 +30,7 @@ export default class UserService {
     await user.setPassword(userDto.password);
     user.dob = new Date(userDto.dob);
     user.name = userDto.name;
+    user.phone = userDto.phone;
     user.updatedAt = new Date();
     user.createdAt = new Date();
 

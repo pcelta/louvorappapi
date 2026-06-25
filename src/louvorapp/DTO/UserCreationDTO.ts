@@ -5,7 +5,9 @@ import {
   MinLength,
   DateString,
   Email,
+  CustomSchema,
 } from 'joi-typescript-validator';
+import Joi from 'joi';
 
 export default class UserCreationDTO {
   @Required()
@@ -26,4 +28,13 @@ export default class UserCreationDTO {
   @MaxLength(30)
   @MinLength(8)
   public password: string;
+
+  @Required()
+  @NotEmpty()
+  @CustomSchema((schema) =>
+    (schema as Joi.StringSchema).pattern(/^\+[1-9]\d{1,14}$/).messages({
+      'string.pattern.base': 'phone must be in E.164 format, e.g. +14155552671',
+    }),
+  )
+  public phone: string;
 }

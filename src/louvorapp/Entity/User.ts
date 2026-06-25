@@ -23,6 +23,9 @@ export default class User {
   @Property({ type: 'date' })
   dob: Date;
 
+  @Property({ type: 'text' })
+  phone: string;
+
   @Property({ type: 'date', fieldName: 'created_at' })
   createdAt: Date;
 
@@ -47,6 +50,7 @@ export default class User {
       dob: this.dob,
       uid: this.uid,
       name: this.name,
+      phone: this.phone,
     };
 
     return raw;
