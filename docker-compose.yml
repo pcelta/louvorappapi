@@ -15,9 +15,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
-    # Build the schema from migrations on boot (replaces the old db.sql init),
-    # then start the dev server with hot reload.
+      dockerfile: apps/api/Dockerfile
     command: sh -c "npm run migration:up && npm run start:dev:docker"
     environment:
       DATABASE_NAME: "louvorappdb"
@@ -29,10 +27,19 @@ services:
     ports:
       - "3000:80"
     volumes:
-      # Bind-mount only the source for hot reload. node_modules (with its
-      # linux-native bcrypt/swc) and dist (built fresh by nest --watch) stay
-      # inside the container from the image build — never overlaid by the host.
-      - ./src:/app/src
+      - ./apps/api/src:/app/apps/api/src
     depends_on:
       postgres:
         condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      VITE_USE_POLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - /app/apps/web/node_modules
