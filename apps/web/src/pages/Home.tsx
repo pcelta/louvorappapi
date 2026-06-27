@@ -1,22 +1,53 @@
 import { useEffect, useState } from 'react'
+import type { ComponentType, SVGProps } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  Squares2X2Icon,
+  QueueListIcon,
+  CalendarDaysIcon,
+  MusicalNoteIcon,
+  UsersIcon,
+  Cog6ToothIcon,
+  BellIcon,
+  ChevronUpDownIcon,
+} from '@heroicons/react/24/outline'
 import { getMe } from '../lib/api'
 import type { CurrentMember } from '../lib/api'
 import { clearToken, getToken } from '../lib/auth'
 
-function Logo({ name, path }: { name: string; path: string }) {
-  const isImage = path?.startsWith('http')
-  if (isImage) {
-    return (
-      <img
-        src={path}
-        alt={name}
-        className="h-10 w-10 rounded-xl object-cover"
-      />
-    )
+type HeroIcon = ComponentType<SVGProps<SVGSVGElement>>
+
+const navSections: { label: string; items: { label: string; icon: HeroIcon; active?: boolean }[] }[] = [
+  {
+    label: 'Painel',
+    items: [
+      { label: 'Visão geral', icon: Squares2X2Icon, active: true },
+      { label: 'Repertório', icon: QueueListIcon },
+      { label: 'Escalas', icon: CalendarDaysIcon },
+      { label: 'Músicas', icon: MusicalNoteIcon },
+    ],
+  },
+  {
+    label: 'Gestão',
+    items: [
+      { label: 'Membros', icon: UsersIcon },
+      { label: 'Configurações', icon: Cog6ToothIcon },
+    ],
+  },
+]
+
+const summaryCards: { label: string; icon: HeroIcon }[] = [
+  { label: 'Membros', icon: UsersIcon },
+  { label: 'Músicas', icon: MusicalNoteIcon },
+  { label: 'Escalas', icon: CalendarDaysIcon },
+]
+
+function ChurchLogo({ name, path }: { name: string; path: string }) {
+  if (path?.startsWith('http')) {
+    return <img src={path} alt={name} className="h-9 w-9 rounded-lg object-cover" />
   }
   return (
-    <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-600 text-lg font-bold text-white">
+    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-teal-500 text-sm font-bold text-white">
       {name.charAt(0).toUpperCase()}
     </span>
   )
@@ -58,46 +89,140 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Logo name={member.church.name} path={member.church.logo_path} />
-          <h1 className="text-lg font-semibold text-slate-800">
-            Bem vindo(a) {member.user.name} a {member.church.name}
-          </h1>
+    <div className="flex min-h-screen bg-slate-50">
+      <aside className="hidden w-64 shrink-0 flex-col bg-slate-900 p-4 md:flex">
+        <div className="flex items-center gap-2 px-2 py-2">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-teal-500 text-base font-bold text-white">
+            L
+          </span>
+          <span className="text-lg font-semibold tracking-tight text-white">
+            LouvorApp
+          </span>
         </div>
 
-        <div className="relative">
+        <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-800 p-3">
+          <ChurchLogo name={member.church.name} path={member.church.logo_path} />
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] uppercase tracking-wide text-slate-400">
+              Igreja
+            </p>
+            <p className="truncate text-sm font-semibold text-white">
+              {member.church.name}
+            </p>
+          </div>
+          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-slate-400" />
+        </div>
+
+        <nav className="mt-6 flex-1 space-y-6">
+          {navSections.map((section) => (
+            <div key={section.label}>
+              <p className="px-3 text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                {section.label}
+              </p>
+              <ul className="mt-2 space-y-1">
+                {section.items.map((item) => (
+                  <li key={item.label}>
+                    <button
+                      type="button"
+                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                        item.active
+                          ? 'bg-teal-600 text-white'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      }`}
+                    >
+                      <item.icon className="h-[18px] w-[18px]" />
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-end gap-2 border-b border-slate-200 bg-white px-6 py-3">
           <button
             type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-sm font-semibold text-slate-700 transition hover:bg-slate-300"
-            aria-label="Menu do usuário"
+            className="relative grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100"
+            aria-label="Notificações"
           >
-            {member.user.name.charAt(0).toUpperCase()}
+            <BellIcon className="h-5 w-5" />
+            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-teal-500 ring-2 ring-white" />
           </button>
 
-          {menuOpen && (
-            <>
-              <button
-                type="button"
-                className="fixed inset-0 z-10 cursor-default"
-                aria-hidden="true"
-                onClick={() => setMenuOpen(false)}
-              />
-              <div className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="grid h-10 w-10 place-items-center rounded-full bg-teal-600 text-sm font-semibold text-white transition hover:bg-teal-700"
+              aria-label="Menu do usuário"
+            >
+              {member.user.name.charAt(0).toUpperCase()}
+            </button>
+
+            {menuOpen && (
+              <>
                 <button
                   type="button"
-                  onClick={logout}
-                  className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50"
-                >
-                  Sair
-                </button>
+                  className="fixed inset-0 z-10 cursor-default"
+                  aria-hidden="true"
+                  onClick={() => setMenuOpen(false)}
+                />
+                <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                  <div className="border-b border-slate-100 px-4 py-3">
+                    <p className="truncate text-sm font-medium text-slate-800">
+                      {member.user.name}
+                    </p>
+                    <p className="truncate text-xs text-slate-500">
+                      {member.user.email}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Sair
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </header>
+
+        <main className="flex-1 p-6">
+          <h1 className="text-2xl font-bold text-slate-900">
+            Bem vindo(a), {member.user.name}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {member.church.name}
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {summaryCards.map((card) => (
+              <div
+                key={card.label}
+                className="rounded-2xl border border-slate-200 bg-white p-5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-600">
+                    <card.icon className="h-5 w-5" />
+                  </span>
+                  <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
+                    Em breve
+                  </span>
+                </div>
+                <p className="mt-4 text-sm font-medium text-slate-500">
+                  {card.label}
+                </p>
+                <p className="text-2xl font-bold text-slate-900">—</p>
               </div>
-            </>
-          )}
-        </div>
-      </header>
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
