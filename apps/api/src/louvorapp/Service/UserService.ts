@@ -28,7 +28,7 @@ export default class UserService {
     user.uid = UidManager.generate('user');
     user.email = userDto.email;
     await user.setPassword(userDto.password);
-    user.dob = new Date(userDto.dob);
+    user.dob = userDto.dob ? new Date(userDto.dob) : null;
     user.name = userDto.name;
     user.phone = userDto.phone;
     user.updatedAt = new Date();

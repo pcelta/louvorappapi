@@ -1,5 +1,6 @@
 import {
   Required,
+  Optional,
   NotEmpty,
   MaxLength,
   MinLength,
@@ -19,10 +20,9 @@ export default class UserCreationDTO {
   @Email()
   public email: string;
 
-  @Required()
-  @NotEmpty()
+  @Optional()
   @DateString('YYYY-MM-DD')
-  public dob: string;
+  public dob?: string;
 
   @Required()
   @MaxLength(30)

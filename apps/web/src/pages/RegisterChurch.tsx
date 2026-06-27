@@ -5,6 +5,7 @@ import AuthLayout from '../components/AuthLayout'
 import TextField from '../components/TextField'
 import Button from '../components/Button'
 import { isEmail, isE164 } from '../lib/validation'
+import { createChurch } from '../lib/api'
 
 export default function RegisterChurch() {
   const navigate = useNavigate()
@@ -15,6 +16,8 @@ export default function RegisterChurch() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitError, setSubmitError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   function goToAccount() {
     const next: Record<string, string> = {}
@@ -23,8 +26,9 @@ export default function RegisterChurch() {
     if (Object.keys(next).length === 0) setStep(2)
   }
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault()
+    setSubmitError('')
     const next: Record<string, string> = {}
     if (!name) {
       next.name = 'Informe um nome';
@@ -47,7 +51,20 @@ export default function RegisterChurch() {
       return;
     }
 
-    navigate('/login', { state: { justRegistered: true, email } })
+    setSubmitting(true)
+    try {
+      await createChurch({
+        name: churchName,
+        members: [{ user: { name, email, password, phone } }],
+      })
+      navigate('/login', { state: { justRegistered: true, email } })
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : 'Não foi possível cadastrar a igreja',
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -93,14 +110,19 @@ export default function RegisterChurch() {
         </div>
       ) : (
         <form className="space-y-5" onSubmit={submit}>
+          {submitError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {submitError}
+            </div>
+          )}
           <TextField
             id="name"
             label="Nome"
-            type="tel"
             placeholder="Seu nome"
-            value={phone}
+            value={name}
             onChange={(e) => setName(e.target.value)}
             error={errors.name}
+            autoFocus
           />
           <TextField
             id="email"
@@ -110,7 +132,6 @@ export default function RegisterChurch() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             error={errors.email}
-            autoFocus
           />
           <TextField
             id="phone"
@@ -134,8 +155,8 @@ export default function RegisterChurch() {
             <Button type="button" variant="ghost" onClick={() => setStep(1)}>
               Voltar
             </Button>
-            <Button type="submit" className="flex-1">
-              Criar conta
+            <Button type="submit" className="flex-1" disabled={submitting}>
+              {submitting ? 'Criando...' : 'Criar conta'}
             </Button>
           </div>
         </form>

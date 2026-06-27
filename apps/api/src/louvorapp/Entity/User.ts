@@ -20,8 +20,8 @@ export default class User {
   @Property({ type: 'text' })
   name: string;
 
-  @Property({ type: 'date' })
-  dob: Date;
+  @Property({ type: 'date', nullable: true })
+  dob?: Date;
 
   @Property({ type: 'text' })
   phone: string;
