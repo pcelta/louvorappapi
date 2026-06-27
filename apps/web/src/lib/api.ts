@@ -182,6 +182,153 @@ export async function getInvitation(code: string): Promise<InvitationInfo> {
   return data
 }
 
+export type Artist = { uid: string; name: string; cover_image?: string }
+
+export async function searchArtists(
+  token: string,
+  query: string,
+): Promise<Artist[]> {
+  const res = await fetch(
+    `${API_URL}/artist?search=${encodeURIComponent(query)}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  )
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível buscar artistas')
+  }
+
+  return data
+}
+
+export async function createArtist(
+  token: string,
+  name: string,
+): Promise<Artist> {
+  const res = await fetch(`${API_URL}/artist`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name }),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível criar o artista')
+  }
+
+  return data
+}
+
+export type SongLinkData = { uid?: string; url: string; type: string }
+
+export type SongAttributes = { occasions?: string[] } | null
+
+export type SongData = {
+  uid: string
+  title: string
+  lyrics?: string
+  key?: string
+  notes?: string
+  bpm?: number
+  has_multitrack: boolean
+  is_active: boolean
+  attributes: SongAttributes
+  created_at: string
+  artist: Artist | null
+  links: { uid: string; url: string; type: string }[]
+}
+
+export type SongPayload = {
+  title: string
+  artistUid: string
+  key?: string
+  lyrics?: string
+  notes?: string
+  bpm?: number
+  hasMultitrack?: boolean
+  isActive?: boolean
+  attributes?: { occasions?: string[] }
+  links?: { url: string; type: string }[]
+}
+
+export async function listSongs(token: string): Promise<SongData[]> {
+  const res = await fetch(`${API_URL}/song`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível carregar as músicas')
+  }
+
+  return data
+}
+
+export async function getSong(token: string, uid: string): Promise<SongData> {
+  const res = await fetch(`${API_URL}/song/${uid}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Música não encontrada')
+  }
+
+  return data
+}
+
+export async function createSong(
+  token: string,
+  payload: SongPayload,
+): Promise<SongData> {
+  const res = await fetch(`${API_URL}/song`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar a música')
+  }
+
+  return data
+}
+
+export async function updateSong(
+  token: string,
+  uid: string,
+  payload: SongPayload,
+): Promise<SongData> {
+  const res = await fetch(`${API_URL}/song/${uid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar a música')
+  }
+
+  return data
+}
+
 export async function acceptInvitation(
   code: string,
   fields: {

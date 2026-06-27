@@ -29,7 +29,7 @@ const navSections: {
       { label: 'Visão geral', icon: Squares2X2Icon, to: '/home' },
       { label: 'Repertório', icon: QueueListIcon },
       { label: 'Escalas', icon: CalendarDaysIcon },
-      { label: 'Músicas', icon: MusicalNoteIcon },
+      { label: 'Músicas', icon: MusicalNoteIcon, to: '/songs' },
     ],
   },
   {
@@ -159,7 +159,10 @@ export default function DashboardLayout({
               </p>
               <ul className="mt-2 space-y-1">
                 {section.items.map((item) => {
-                  const active = !!item.to && location.pathname === item.to
+                  const active =
+                    !!item.to &&
+                    (location.pathname === item.to ||
+                      location.pathname.startsWith(item.to + '/'))
                   return (
                     <li key={item.label}>
                       <button

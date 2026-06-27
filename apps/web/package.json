@@ -10,6 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@icons-pack/react-simple-icons": "^13.13.0",
+    "@tiptap/extension-text-style": "^3.27.1",
+    "@tiptap/pm": "^3.27.1",
+    "@tiptap/react": "^3.27.1",
+    "@tiptap/starter-kit": "^3.27.1",
     "lucide-react": "^1.21.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

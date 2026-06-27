@@ -5,6 +5,9 @@ export default class UidManager {
     user: 'usr',
     member: 'mbr',
     church: 'chr',
+    artist: 'art',
+    song: 'sng',
+    song_link: 'lnk',
   };
 
   public static generate(entityName: string): string {
