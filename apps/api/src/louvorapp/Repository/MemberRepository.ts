@@ -40,7 +40,7 @@ export class MemberRepository extends AbstractRepository {
           'memberSkills',
           'memberSkills.skill',
         ],
-        orderBy: { createdAt: 'asc' },
+        orderBy: { user: { name: 'asc' } },
       },
     );
   }
