@@ -43,6 +43,7 @@ export default class Member {
       uid: this.uid,
       createdAt: this.createdAt,
       user: this.user.toRaw(),
+      church: this.church.toRaw(),
     };
   }
 }

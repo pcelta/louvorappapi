@@ -34,7 +34,7 @@ export class AuthController {
 
     const authenticatedUser = await this.authService.authenticate(user);
     if (authenticatedUser) {
-      this.authService.createAccess(authenticatedUser);
+      await this.authService.createAccess(authenticatedUser);
       const jwt = await this.authService.createJwtToken(authenticatedUser);
 
       return res.status(HttpStatus.OK).json({ access_token: jwt });

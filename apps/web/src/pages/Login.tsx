@@ -1,20 +1,36 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
 import TextField from '../components/TextField'
 import Button from '../components/Button'
+import { signIn } from '../lib/api'
+import { setToken } from '../lib/auth'
 
 type LocationState = { justRegistered?: boolean; email?: string }
 
 export default function Login() {
   const location = useLocation()
+  const navigate = useNavigate()
   const state = location.state as LocationState | null
   const [email, setEmail] = useState(state?.email ?? '')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault()
+    setError('')
+    setSubmitting(true)
+    try {
+      const token = await signIn(email, password)
+      setToken(token)
+      navigate('/home', { replace: true })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível entrar')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -29,6 +45,11 @@ export default function Login() {
       )}
 
       <form className="space-y-5" onSubmit={submit}>
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
         <TextField
           id="email"
           label="Email"
@@ -45,8 +66,8 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" className="w-full">
-          Entrar
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
 

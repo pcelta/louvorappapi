@@ -24,14 +24,10 @@ export class MemberRepository extends AbstractRepository {
     uid: string,
     accessToken: string,
   ): Promise<Member> {
-    const queryBuilder = this.em.createQueryBuilder(Member, 'm');
-    const member = await queryBuilder
-      .select(['m.*', 'u.*'], true)
-      .join('m.user', 'u')
-      .join('u.access', 'ua')
-      .where({ 'u.uid': uid, 'ua.access_token': accessToken })
-      .getSingleResult();
-
-    return member;
+    return await this.em.findOne(
+      Member,
+      { user: { uid, access: { accessToken } } },
+      { populate: ['user', 'church'] },
+    );
   }
 }
