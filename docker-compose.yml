@@ -29,7 +29,7 @@ services:
     volumes:
       - ./apps/api/src:/app/apps/api/src
     depends_on:
-      postgres:o
+      postgres:
         condition: service_healthy
 
   web:
