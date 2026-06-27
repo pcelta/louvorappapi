@@ -10,6 +10,7 @@ import {
 import User from './User';
 import { MemberRole } from './MemberRole';
 import { MemberSkills } from './MemberSkills';
+import { MemberInvitation } from './MemberInvitation';
 import Church from './Church';
 
 @Entity({ tableName: 'members' })
@@ -43,8 +44,21 @@ export default class Member {
   })
   memberSkills: Collection<MemberSkills>;
 
+  @OneToMany({ entity: () => MemberInvitation, mappedBy: 'member' })
+  invitations: Collection<MemberInvitation>;
+
   @ManyToOne({ joinColumn: 'fk_church', entity: () => Church })
   church: Church;
+
+  private pendingInviteCode(): string | null {
+    if (!this.invitations?.isInitialized()) {
+      return null;
+    }
+
+    const pending = this.invitations.getItems().find((i) => !i.accepted);
+
+    return pending ? pending.code : null;
+  }
 
   public toRaw() {
     return {
@@ -67,6 +81,7 @@ export default class Member {
             }))
         : [],
       pending: !this.user.password,
+      invite_code: this.pendingInviteCode(),
     };
   }
 }

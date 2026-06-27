@@ -89,6 +89,7 @@ export type MemberListItem = {
   uid: string
   createdAt: string
   pending: boolean
+  invite_code: string | null
   roles: MemberRole[]
   skills: MemberSkill[]
   user: { name: string; email: string; phone?: string; photo_path?: string }

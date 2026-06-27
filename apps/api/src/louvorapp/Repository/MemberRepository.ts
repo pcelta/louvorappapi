@@ -39,6 +39,7 @@ export class MemberRepository extends AbstractRepository {
           'memberRoles.role',
           'memberSkills',
           'memberSkills.skill',
+          'invitations',
         ],
         orderBy: { user: { name: 'asc' } },
       },

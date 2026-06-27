@@ -28,6 +28,29 @@ function Avatar({ name, path }: { name: string; path?: string }) {
   )
 }
 
+function CopyInviteButton({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/member-invitation/${code}`,
+    )
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="flex shrink-0 items-center gap-1 rounded-full border border-amber-200 px-2.5 py-1 text-xs font-medium text-amber-700 transition hover:bg-amber-50"
+    >
+      <ClipboardIcon className="h-3.5 w-3.5" />
+      {copied ? 'Copiado' : 'Copiar convite'}
+    </button>
+  )
+}
+
 function AddMemberModal({
   skills,
   onClose,
@@ -357,15 +380,18 @@ export default function Members() {
                         </span>
                       ))}
                     </div>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
-                        m.pending
-                          ? 'bg-amber-50 text-amber-700'
-                          : 'bg-teal-50 text-teal-700'
-                      }`}
-                    >
-                      {m.pending ? 'Convite pendente' : 'Ativo'}
-                    </span>
+                    {m.pending ? (
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+                          Convite pendente
+                        </span>
+                        {m.invite_code && <CopyInviteButton code={m.invite_code} />}
+                      </div>
+                    ) : (
+                      <span className="shrink-0 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
+                        Ativo
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={() => setEditing(m)}
