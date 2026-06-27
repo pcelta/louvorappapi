@@ -16,6 +16,8 @@ export default class AuthService {
   ) {}
 
   public async createAccess(user: User): Promise<UserAccess> {
+    await this.accessRepository.deleteByUser(user);
+
     let access = new UserAccess();
     access.user = user;
     access.accessTokenExpiresdAt = this.createTokenExpireDate(
