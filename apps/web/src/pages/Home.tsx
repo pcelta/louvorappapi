@@ -10,6 +10,8 @@ import {
   Cog6ToothIcon,
   BellIcon,
   ChevronUpDownIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { getMe } from '../lib/api'
 import type { CurrentMember } from '../lib/api'
@@ -58,6 +60,7 @@ export default function Home() {
   const [member, setMember] = useState<CurrentMember | null>(null)
   const [error, setError] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = getToken()
@@ -90,14 +93,37 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <aside className="hidden w-64 shrink-0 flex-col bg-slate-900 p-4 md:flex">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-teal-500 text-base font-bold text-white">
-            L
-          </span>
-          <span className="text-lg font-semibold tracking-tight text-white">
-            LouvorApp
-          </span>
+      {sidebarOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-slate-900/50 md:hidden"
+          aria-label="Fechar menu"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col bg-slate-900 p-4 transition-transform md:static md:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between px-2 py-2">
+          <div className="flex items-center gap-2">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-teal-500 text-base font-bold text-white">
+              L
+            </span>
+            <span className="text-lg font-semibold tracking-tight text-white">
+              LouvorApp
+            </span>
+          </div>
+          <button
+            type="button"
+            className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white md:hidden"
+            aria-label="Fechar menu"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-800 p-3">
@@ -124,6 +150,7 @@ export default function Home() {
                   <li key={item.label}>
                     <button
                       type="button"
+                      onClick={() => setSidebarOpen(false)}
                       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                         item.active
                           ? 'bg-teal-600 text-white'
@@ -142,10 +169,19 @@ export default function Home() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-end gap-2 border-b border-slate-200 bg-white px-6 py-3">
+        <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
           <button
             type="button"
-            className="relative grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100"
+            className="grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 md:hidden"
+            aria-label="Abrir menu"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Bars3Icon className="h-6 w-6" />
+          </button>
+
+          <button
+            type="button"
+            className="relative ml-auto grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100"
             aria-label="Notificações"
           >
             <BellIcon className="h-5 w-5" />
