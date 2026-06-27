@@ -45,6 +45,13 @@ export class MemberInvitation {
           name: this.member.church.name,
           logo_path: this.member.church.logoPath,
         },
+        skills: this.member.memberSkills?.isInitialized()
+          ? this.member.memberSkills.getItems().map((ms) => ({
+              slug: ms.skill.slug,
+              name: ms.skill.name,
+              icon: ms.skill.icon,
+            }))
+          : [],
       },
     };
   }

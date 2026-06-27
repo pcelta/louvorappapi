@@ -31,12 +31,13 @@ export class MemberInvitationController {
   @UseInterceptors(FileInterceptor('photo', { storage: avatarStorage }))
   async accept(
     @Param('code') code: string,
-    @Body() body: { password?: string; phone?: string },
+    @Body() body: { password?: string; phone?: string; skills?: string },
     @UploadedFile() photo: Express.Multer.File,
     @Res() res: Response,
   ) {
     const password = body.password ?? '';
     const phone = body.phone ?? '';
+    const skills = this.parseSkills(body.skills);
 
     if (password.length < 8 || password.length > 30) {
       res
@@ -56,8 +57,21 @@ export class MemberInvitationController {
 
     const photoPath = photo ? `/uploads/avatars/${photo.filename}` : undefined;
 
-    await this.service.accept(code, password, phone, photoPath);
+    await this.service.accept(code, password, phone, photoPath, skills);
 
     res.status(HttpStatus.OK).json({ message: 'Convite aceito' });
+  }
+
+  private parseSkills(raw?: string): string[] {
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      return [];
+    }
   }
 }

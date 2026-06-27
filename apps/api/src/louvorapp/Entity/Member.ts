@@ -9,6 +9,7 @@ import {
 } from '@mikro-orm/core';
 import User from './User';
 import { MemberRole } from './MemberRole';
+import { MemberSkills } from './MemberSkills';
 import Church from './Church';
 
 @Entity({ tableName: 'members' })
@@ -35,6 +36,13 @@ export default class Member {
   })
   memberRoles: Collection<MemberRole>;
 
+  @OneToMany({
+    entity: () => MemberSkills,
+    mappedBy: 'member',
+    orphanRemoval: true,
+  })
+  memberSkills: Collection<MemberSkills>;
+
   @ManyToOne({ joinColumn: 'fk_church', entity: () => Church })
   church: Church;
 
@@ -48,6 +56,15 @@ export default class Member {
         ? this.memberRoles
             .getItems()
             .map((mr) => ({ slug: mr.role.slug, name: mr.role.name }))
+        : [],
+      skills: this.memberSkills?.isInitialized()
+        ? this.memberSkills
+            .getItems()
+            .map((ms) => ({
+              slug: ms.skill.slug,
+              name: ms.skill.name,
+              icon: ms.skill.icon,
+            }))
         : [],
       pending: !this.user.password,
     };

@@ -69,11 +69,28 @@ export async function getMe(token: string): Promise<CurrentMember> {
 
 export type MemberRole = { slug: string; name: string }
 
+export type Skill = { uid: string; slug: string; name: string; icon: string }
+
+export type MemberSkill = { slug: string; name: string; icon: string }
+
+export async function listSkills(): Promise<Skill[]> {
+  const res = await fetch(`${API_URL}/skill`)
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível carregar as habilidades')
+  }
+
+  return data
+}
+
 export type MemberListItem = {
   uid: string
   createdAt: string
   pending: boolean
   roles: MemberRole[]
+  skills: MemberSkill[]
   user: { name: string; email: string; phone?: string; photo_path?: string }
 }
 
@@ -91,6 +108,27 @@ export async function listMembers(token: string): Promise<MemberListItem[]> {
   return data
 }
 
+export async function updateMemberSkills(
+  token: string,
+  uid: string,
+  skills: string[],
+): Promise<void> {
+  const res = await fetch(`${API_URL}/member/${uid}/skills`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ skills }),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível atualizar as habilidades')
+  }
+}
+
 export type AddMemberResult = {
   member: MemberListItem
   invitation: { code: string; path: string; expires_at: string }
@@ -100,6 +138,7 @@ export async function addMember(
   token: string,
   name: string,
   email: string,
+  skills: string[] = [],
 ): Promise<AddMemberResult> {
   const res = await fetch(`${API_URL}/member`, {
     method: 'POST',
@@ -107,7 +146,7 @@ export async function addMember(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ name, email }),
+    body: JSON.stringify({ name, email, skills }),
   })
 
   const data = await res.json().catch(() => null)
@@ -127,6 +166,7 @@ export type InvitationInfo = {
   member: {
     user: { name: string; email: string }
     church: { name: string; logo_path: string }
+    skills: MemberSkill[]
   }
 }
 
@@ -144,11 +184,17 @@ export async function getInvitation(code: string): Promise<InvitationInfo> {
 
 export async function acceptInvitation(
   code: string,
-  fields: { password: string; phone: string; photo?: File | null },
+  fields: {
+    password: string
+    phone: string
+    photo?: File | null
+    skills: string[]
+  },
 ): Promise<void> {
   const form = new FormData()
   form.append('password', fields.password)
   form.append('phone', fields.phone)
+  form.append('skills', JSON.stringify(fields.skills))
   if (fields.photo) {
     form.append('photo', fields.photo)
   }

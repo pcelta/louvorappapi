@@ -1,4 +1,4 @@
-import { Required, NotEmpty, Email } from 'joi-typescript-validator';
+import { Required, Optional, NotEmpty, Email, ItemType } from 'joi-typescript-validator';
 
 export default class MemberInviteDTO {
   @Required()
@@ -9,4 +9,8 @@ export default class MemberInviteDTO {
   @NotEmpty()
   @Email()
   public email: string;
+
+  @Optional()
+  @ItemType(String)
+  public skills?: string[];
 }

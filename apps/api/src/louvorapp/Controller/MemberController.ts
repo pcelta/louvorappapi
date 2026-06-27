@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Put,
+  Param,
   Body,
   Res,
   HttpStatus,
@@ -60,6 +62,7 @@ export class MemberController {
       body.name,
       body.email,
       admin.church,
+      body.skills ?? [],
     );
 
     res.status(HttpStatus.CREATED).json({
@@ -70,5 +73,18 @@ export class MemberController {
         expires_at: invitation.expiresAt,
       },
     });
+  }
+
+  @Put(':uid/skills')
+  @UseGuards(AuthGuard)
+  async updateSkills(
+    @ExtractJwtData(JwtToMemberPipe) admin: Member,
+    @Param('uid') uid: string,
+    @Body() body: { skills?: string[] },
+    @Res() res: Response,
+  ) {
+    await this.memberService.updateSkills(uid, admin.church, body.skills ?? []);
+
+    res.status(HttpStatus.OK).json({ message: 'Habilidades atualizadas' });
   }
 }

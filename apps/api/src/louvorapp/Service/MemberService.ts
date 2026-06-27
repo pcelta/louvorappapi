@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MemberRepository } from '../Repository/MemberRepository';
 import UserService from './UserService';
 import UidManager from '../Util/UidManager';
@@ -6,6 +10,7 @@ import Member from '../Entity/Member';
 import User from '../Entity/User';
 import { MemberRoleService } from './MemberRoleService';
 import { MemberInvitationService } from './MemberInvitationService';
+import { MemberSkillsService } from './MemberSkillsService';
 import { MemberInvitation } from '../Entity/MemberInvitation';
 import { Role } from '../Entity/Role';
 import Church from '../Entity/Church';
@@ -17,16 +22,34 @@ export class MemberService {
     private readonly userService: UserService,
     private readonly memberRoleService: MemberRoleService,
     private readonly memberInvitationService: MemberInvitationService,
+    private readonly memberSkillsService: MemberSkillsService,
   ) {}
 
   public async listByChurch(church: Church): Promise<Member[]> {
     return await this.memberRepository.findByChurch(church.id);
   }
 
+  public async updateSkills(
+    uid: string,
+    church: Church,
+    skills: string[],
+  ): Promise<void> {
+    const member = await this.memberRepository.findByUidAndChurch(
+      uid,
+      church.id,
+    );
+    if (!member) {
+      throw new NotFoundException('Membro não encontrado');
+    }
+
+    await this.memberSkillsService.setForMember(member, skills);
+  }
+
   public async invite(
     name: string,
     email: string,
     church: Church,
+    skills: string[] = [],
   ): Promise<{ member: Member; invitation: MemberInvitation }> {
     const existing = await this.userService.getByEmail(email);
     if (existing) {
@@ -45,6 +68,8 @@ export class MemberService {
 
     await this.memberRoleService.addRoleBySlug(member, Role.ROLE_MEMBER);
     await this.memberRoleService.addRoleBySlug(member, Role.ROLE_WORSHIP_TEAM);
+
+    await this.memberSkillsService.setForMember(member, skills);
 
     const invitation = await this.memberInvitationService.createForMember(member);
 

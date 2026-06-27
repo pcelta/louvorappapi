@@ -20,12 +20,26 @@ export class MemberRepository extends AbstractRepository {
     await this.em.persist(member).flush();
   }
 
+  public async findByUidAndChurch(
+    uid: string,
+    churchId: number,
+  ): Promise<Member> {
+    return await this.em.findOne(Member, { uid, church: churchId });
+  }
+
   public async findByChurch(churchId: number): Promise<Member[]> {
     return await this.em.find(
       Member,
       { church: churchId },
       {
-        populate: ['user', 'church', 'memberRoles', 'memberRoles.role'],
+        populate: [
+          'user',
+          'church',
+          'memberRoles',
+          'memberRoles.role',
+          'memberSkills',
+          'memberSkills.skill',
+        ],
         orderBy: { createdAt: 'asc' },
       },
     );

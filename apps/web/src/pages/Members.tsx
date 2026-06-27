@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { PlusIcon, XMarkIcon, ClipboardIcon } from '@heroicons/react/24/outline'
+import {
+  PlusIcon,
+  XMarkIcon,
+  ClipboardIcon,
+  PencilSquareIcon,
+} from '@heroicons/react/24/outline'
 import DashboardLayout, { buildPhotoUrl } from '../components/DashboardLayout'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
-import { listMembers, addMember } from '../lib/api'
-import type { MemberListItem } from '../lib/api'
+import SkillPicker from '../components/SkillPicker'
+import InstrumentIcon from '../components/InstrumentIcon'
+import { listMembers, addMember, listSkills, updateMemberSkills } from '../lib/api'
+import type { MemberListItem, Skill } from '../lib/api'
 import { getToken } from '../lib/auth'
 import { isEmail } from '../lib/validation'
 
@@ -22,19 +29,28 @@ function Avatar({ name, path }: { name: string; path?: string }) {
 }
 
 function AddMemberModal({
+  skills,
   onClose,
   onAdded,
 }: {
+  skills: Skill[]
   onClose: () => void
   onAdded: () => void
 }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [inviteUrl, setInviteUrl] = useState('')
   const [copied, setCopied] = useState(false)
+
+  function toggleSkill(slug: string) {
+    setSelectedSkills((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    )
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -50,7 +66,7 @@ function AddMemberModal({
 
     setSubmitting(true)
     try {
-      const result = await addMember(token, name, email)
+      const result = await addMember(token, name, email, selectedSkills)
       setInviteUrl(`${window.location.origin}${result.invitation.path}`)
       onAdded()
     } catch (err) {
@@ -141,6 +157,16 @@ function AddMemberModal({
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
             />
+            <div>
+              <p className="mb-2 block text-sm font-medium text-slate-700">
+                Habilidades
+              </p>
+              <SkillPicker
+                skills={skills}
+                selected={selectedSkills}
+                onToggle={toggleSkill}
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? 'Gerando convite...' : 'Adicionar e gerar convite'}
             </Button>
@@ -151,16 +177,105 @@ function AddMemberModal({
   )
 }
 
+function EditSkillsModal({
+  member,
+  skills,
+  onClose,
+  onSaved,
+}: {
+  member: MemberListItem
+  skills: Skill[]
+  onClose: () => void
+  onSaved: () => void
+}) {
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(
+    member.skills.map((s) => s.slug),
+  )
+  const [submitError, setSubmitError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  function toggleSkill(slug: string) {
+    setSelectedSkills((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    )
+  }
+
+  async function save() {
+    const token = getToken()
+    if (!token) return
+    setSubmitError('')
+    setSubmitting(true)
+    try {
+      await updateMemberSkills(token, member.uid, selectedSkills)
+      onSaved()
+      onClose()
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : 'Não foi possível salvar',
+      )
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        className="absolute inset-0 bg-slate-900/50"
+        aria-label="Fechar"
+        onClick={onClose}
+      />
+      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Editar habilidades
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            aria-label="Fechar"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <p className="mt-1 text-sm text-slate-500">{member.user.name}</p>
+
+        <div className="mt-4 space-y-4">
+          {submitError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {submitError}
+            </div>
+          )}
+          <SkillPicker
+            skills={skills}
+            selected={selectedSkills}
+            onToggle={toggleSkill}
+          />
+          <Button className="w-full" onClick={save} disabled={submitting}>
+            {submitting ? 'Salvando...' : 'Salvar habilidades'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Members() {
   const [members, setMembers] = useState<MemberListItem[]>([])
+  const [skills, setSkills] = useState<Skill[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<MemberListItem | null>(null)
 
   function load() {
     const token = getToken()
     if (!token) return
     setLoading(true)
+    setError('')
     listMembers(token)
       .then(setMembers)
       .catch((err) =>
@@ -169,7 +284,12 @@ export default function Members() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(load, [])
+  useEffect(() => {
+    load()
+    listSkills()
+      .then(setSkills)
+      .catch(() => setSkills([]))
+  }, [])
 
   return (
     <DashboardLayout>
@@ -210,6 +330,22 @@ export default function Members() {
                       <p className="truncate text-sm text-slate-500">
                         {m.user.email}
                       </p>
+                      {m.skills.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {m.skills.map((skill) => (
+                            <span
+                              key={skill.slug}
+                              className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600"
+                            >
+                              <InstrumentIcon
+                                name={skill.icon}
+                                className="h-3.5 w-3.5"
+                              />
+                              {skill.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="hidden flex-wrap items-center justify-end gap-1.5 sm:flex">
                       {m.roles.map((role) => (
@@ -230,6 +366,14 @@ export default function Members() {
                     >
                       {m.pending ? 'Convite pendente' : 'Ativo'}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditing(m)}
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                      aria-label="Editar habilidades"
+                    >
+                      <PencilSquareIcon className="h-5 w-5" />
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -237,7 +381,20 @@ export default function Members() {
           </div>
 
           {modalOpen && (
-            <AddMemberModal onClose={() => setModalOpen(false)} onAdded={load} />
+            <AddMemberModal
+              skills={skills}
+              onClose={() => setModalOpen(false)}
+              onAdded={load}
+            />
+          )}
+
+          {editing && (
+            <EditSkillsModal
+              member={editing}
+              skills={skills}
+              onClose={() => setEditing(null)}
+              onSaved={load}
+            />
           )}
         </>
       )}

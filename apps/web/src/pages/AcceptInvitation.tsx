@@ -4,8 +4,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
 import TextField from '../components/TextField'
 import Button from '../components/Button'
-import { getInvitation, acceptInvitation } from '../lib/api'
-import type { InvitationInfo } from '../lib/api'
+import SkillPicker from '../components/SkillPicker'
+import { getInvitation, acceptInvitation, listSkills } from '../lib/api'
+import type { InvitationInfo, Skill } from '../lib/api'
 import { isE164 } from '../lib/validation'
 
 export default function AcceptInvitation() {
@@ -20,18 +21,33 @@ export default function AcceptInvitation() {
   const [password, setPassword] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState('')
+  const [skills, setSkills] = useState<Skill[]>([])
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     getInvitation(code)
-      .then(setInvitation)
+      .then((data) => {
+        setInvitation(data)
+        setSelectedSkills(data.member.skills.map((s) => s.slug))
+      })
       .catch((err) =>
         setLoadError(err instanceof Error ? err.message : 'Convite inválido'),
       )
       .finally(() => setLoading(false))
+
+    listSkills()
+      .then(setSkills)
+      .catch(() => setSkills([]))
   }, [code])
+
+  function toggleSkill(slug: string) {
+    setSelectedSkills((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    )
+  }
 
   function onPhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null
@@ -51,7 +67,7 @@ export default function AcceptInvitation() {
 
     setSubmitting(true)
     try {
-      await acceptInvitation(code, { password, phone, photo })
+      await acceptInvitation(code, { password, phone, photo, skills: selectedSkills })
       navigate('/login', {
         state: { justRegistered: true, email: invitation?.member.user.email },
       })
@@ -169,6 +185,19 @@ export default function AcceptInvitation() {
           onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
         />
+
+        {skills.length > 0 && (
+          <div>
+            <p className="mb-2 block text-sm font-medium text-slate-700">
+              Habilidades
+            </p>
+            <SkillPicker
+              skills={skills}
+              selected={selectedSkills}
+              onToggle={toggleSkill}
+            />
+          </div>
+        )}
 
         <Button type="submit" className="w-full" disabled={submitting}>
           {submitting ? 'Concluindo...' : 'Concluir cadastro'}

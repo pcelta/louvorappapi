@@ -7,11 +7,15 @@ import {
 import UidManager from '../Util/UidManager';
 import { MemberInvitation } from '../Entity/MemberInvitation';
 import { MemberInvitationRepository } from '../Repository/MemberInvitationRepository';
+import { MemberSkillsService } from './MemberSkillsService';
 import Member from '../Entity/Member';
 
 @Injectable()
 export class MemberInvitationService {
-  constructor(private readonly repository: MemberInvitationRepository) {}
+  constructor(
+    private readonly repository: MemberInvitationRepository,
+    private readonly memberSkillsService: MemberSkillsService,
+  ) {}
 
   public async createForMember(member: Member): Promise<MemberInvitation> {
     const invitation = new MemberInvitation();
@@ -40,6 +44,7 @@ export class MemberInvitationService {
     password: string,
     phone: string,
     photoPath?: string,
+    skills: string[] = [],
   ): Promise<void> {
     const invitation = await this.getByCode(code);
 
@@ -63,6 +68,8 @@ export class MemberInvitationService {
     invitation.acceptedAt = new Date();
 
     await this.repository.flush();
+
+    await this.memberSkillsService.setForMember(invitation.member, skills);
   }
 
   private expiryDate(days: number): Date {

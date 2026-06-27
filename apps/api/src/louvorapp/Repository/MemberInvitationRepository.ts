@@ -13,7 +13,15 @@ export class MemberInvitationRepository extends AbstractRepository {
     return await this.em.findOne(
       MemberInvitation,
       { code },
-      { populate: ['member', 'member.user', 'member.church'] },
+      {
+        populate: [
+          'member',
+          'member.user',
+          'member.church',
+          'member.memberSkills',
+          'member.memberSkills.skill',
+        ],
+      },
     );
   }
 
