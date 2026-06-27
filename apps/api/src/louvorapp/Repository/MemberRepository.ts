@@ -17,7 +17,18 @@ export class MemberRepository extends AbstractRepository {
 
   public async persist(member: Member) {
     delete member['id'];
-    this.em.persist(member).flush();
+    await this.em.persist(member).flush();
+  }
+
+  public async findByChurch(churchId: number): Promise<Member[]> {
+    return await this.em.find(
+      Member,
+      { church: churchId },
+      {
+        populate: ['user', 'church', 'memberRoles', 'memberRoles.role'],
+        orderBy: { createdAt: 'asc' },
+      },
+    );
   }
 
   public async findByUserUidAndAccessToken(

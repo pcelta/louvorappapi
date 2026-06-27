@@ -19,6 +19,9 @@ import { AuthController } from './Controller/AuthController';
 import { JwtToMemberPipe } from './Util/JwtToMemberPipe';
 import { ChurchController } from './Controller/ChurchController';
 import { MemberController } from './Controller/MemberController';
+import { MemberInvitationController } from './Controller/MemberInvitationController';
+import { MemberInvitationService } from './Service/MemberInvitationService';
+import { MemberInvitationRepository } from './Repository/MemberInvitationRepository';
 import { JwtToUserPipe } from './Util/JwtToUserPiper';
 
 @Module({
@@ -50,6 +53,7 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     MemberRoleService,
     ChurchService,
     AuthService,
+    MemberInvitationService,
 
     // repositories
     MemberRepository,
@@ -58,12 +62,14 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     RoleRepository,
     ChurchRepository,
     UserAccessRepository,
+    MemberInvitationRepository,
   ],
   controllers: [
     UserController,
     AuthController,
     ChurchController,
     MemberController,
+    MemberInvitationController,
   ],
 })
 export class LouvorappModule {}

@@ -7,7 +7,7 @@ import User from '../Entity/User';
 export default class UserAccessRepository extends AbstractRepository {
   public async persist(userAccess: UserAccess) {
     delete userAccess['id'];
-    this.em.persist(userAccess).flush();
+    await this.em.persist(userAccess).flush();
   }
 
   public async deleteByUser(user: User): Promise<void> {

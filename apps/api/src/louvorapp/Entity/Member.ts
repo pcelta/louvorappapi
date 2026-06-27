@@ -44,6 +44,12 @@ export default class Member {
       createdAt: this.createdAt,
       user: this.user.toRaw(),
       church: this.church.toRaw(),
+      roles: this.memberRoles?.isInitialized()
+        ? this.memberRoles
+            .getItems()
+            .map((mr) => ({ slug: mr.role.slug, name: mr.role.name }))
+        : [],
+      pending: !this.user.password,
     };
   }
 }

@@ -23,6 +23,19 @@ export default class UserService {
     return await this.userRepository.findByEmail(email);
   }
 
+  public async createInvited(name: string, email: string): Promise<User> {
+    let user = new User();
+    user.uid = UidManager.generate('user');
+    user.email = email;
+    user.name = name;
+    user.updatedAt = new Date();
+    user.createdAt = new Date();
+
+    await this.userRepository.persist(user);
+
+    return user;
+  }
+
   public async createFromCreationDto(userDto: UserCreationDTO): Promise<User> {
     let user = new User();
     user.uid = UidManager.generate('user');

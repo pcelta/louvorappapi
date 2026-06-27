@@ -14,15 +14,19 @@ export class MemberRoleService {
     private readonly memberRoleRepository: MemberRoleRepository,
   ) {}
 
-  public async addAdminRole(member: Member): Promise<void> {
-    let defaultRole = await this.roleRepository.findBySlug(Role.ROLE_ADMIN);
+  public async addRoleBySlug(member: Member, slug: string): Promise<void> {
+    let role = await this.roleRepository.findBySlug(slug);
 
     let memberRole = new MemberRole();
     memberRole.member = member;
-    memberRole.role = defaultRole;
+    memberRole.role = role;
     memberRole.updatedAt = new Date();
     memberRole.createdAt = new Date();
 
-    this.memberRoleRepository.persist(memberRole);
+    await this.memberRoleRepository.persist(memberRole);
+  }
+
+  public async addAdminRole(member: Member): Promise<void> {
+    await this.addRoleBySlug(member, Role.ROLE_ADMIN);
   }
 }

@@ -7,6 +7,6 @@ export default class ChurchRepository extends AbstractRepository {
   public async persist(church: Church): Promise<void> {
     delete church['id'];
 
-    this.em.persist(church).flush();
+    await this.em.persist(church).flush();
   }
 }

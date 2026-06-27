@@ -14,8 +14,8 @@ export default class User {
   @Property({ type: 'text' })
   email: string;
 
-  @Property({ type: 'text' })
-  password: string;
+  @Property({ type: 'text', nullable: true })
+  password?: string;
 
   @Property({ type: 'text' })
   name: string;
@@ -23,8 +23,11 @@ export default class User {
   @Property({ type: 'date', nullable: true })
   dob?: Date;
 
-  @Property({ type: 'text' })
-  phone: string;
+  @Property({ type: 'text', nullable: true })
+  phone?: string;
+
+  @Property({ type: 'text', fieldName: 'photo_path', nullable: true })
+  photoPath?: string;
 
   @Property({ type: 'date', fieldName: 'created_at' })
   createdAt: Date;
@@ -51,6 +54,7 @@ export default class User {
       uid: this.uid,
       name: this.name,
       phone: this.phone,
+      photo_path: this.photoPath,
     };
 
     return raw;

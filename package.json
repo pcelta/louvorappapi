@@ -20,6 +20,7 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
-    "@louvorapp/web": "file:apps/web"
+    "@louvorapp/web": "file:apps/web",
+    "louvorappapi": "file:apps/api"
   }
 }

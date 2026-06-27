@@ -6,6 +6,6 @@ import { MemberRole } from '../Entity/MemberRole';
 export class MemberRoleRepository extends AbstractRepository {
   public async persist(memberRole: MemberRole): Promise<void> {
     delete memberRole['id'];
-    this.em.persist(memberRole).flush();
+    await this.em.persist(memberRole).flush();
   }
 }
