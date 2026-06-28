@@ -8,15 +8,21 @@ import {
   Res,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Validate } from 'joi-typescript-validator';
 import { Response } from 'express';
 import { AuthGuard } from '../Util/AuthGuard';
 import { ExtractJwtData } from '../Util/ExtractJwtDecorator';
 import { JwtToMemberPipe } from '../Util/JwtToMemberPipe';
+import { avatarStorage } from '../Util/AvatarStorage';
 import Member from '../Entity/Member';
 import { MemberService } from '../Service/MemberService';
 import MemberInviteDTO from '../DTO/MemberInviteDTO';
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Controller('member')
 export class MemberController {
@@ -75,6 +81,50 @@ export class MemberController {
     });
   }
 
+  @Put('me')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('photo', { storage: avatarStorage }))
+  async updateProfile(
+    @ExtractJwtData(JwtToMemberPipe) member: Member,
+    @Body()
+    body: { name?: string; email?: string; password?: string; skills?: string },
+    @UploadedFile() photo: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    const name = (body.name ?? '').trim();
+    const email = (body.email ?? '').trim();
+    const password = body.password ?? '';
+
+    if (!name) {
+      res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({ message: 'Informe o nome' });
+      return;
+    }
+    if (!EMAIL.test(email)) {
+      res
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .json({ message: 'Informe um email válido' });
+      return;
+    }
+    if (password && (password.length < 8 || password.length > 30)) {
+      res
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .json({ message: 'A senha deve ter entre 8 e 30 caracteres' });
+      return;
+    }
+
+    const photoPath = photo ? `/uploads/avatars/${photo.filename}` : undefined;
+
+    await this.memberService.updateProfile(member, {
+      name,
+      email,
+      password: password || undefined,
+      photoPath,
+      skills: this.parseSkills(body.skills),
+    });
+
+    res.status(HttpStatus.OK).json({ message: 'Perfil atualizado' });
+  }
+
   @Put(':uid/skills')
   @UseGuards(AuthGuard)
   async updateSkills(
@@ -86,5 +136,18 @@ export class MemberController {
     await this.memberService.updateSkills(uid, admin.church, body.skills ?? []);
 
     res.status(HttpStatus.OK).json({ message: 'Habilidades atualizadas' });
+  }
+
+  private parseSkills(raw?: string): string[] {
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      return [];
+    }
   }
 }

@@ -11,6 +11,10 @@ export default class UserRepository extends AbstractRepository {
     return null;
   }
 
+  public async flush(): Promise<void> {
+    await this.em.flush();
+  }
+
   public async findByEmail(email: string): Promise<User> {
     const queryBuilder = this.em.createQueryBuilder(User);
     const user = await queryBuilder

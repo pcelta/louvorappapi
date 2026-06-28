@@ -42,4 +42,22 @@ export class ChurchService {
 
     return church;
   }
+
+  public async update(
+    church: Church,
+    name?: string,
+    logoPath?: string,
+  ): Promise<Church> {
+    if (name && name.trim()) {
+      church.name = name.trim();
+    }
+    if (logoPath) {
+      church.logoPath = logoPath;
+    }
+    church.updatedAt = new Date();
+
+    await this.churchRepository.flush();
+
+    return church;
+  }
 }

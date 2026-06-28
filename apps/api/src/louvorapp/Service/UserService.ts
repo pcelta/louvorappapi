@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import UidManager from '../Util/UidManager';
 import UserRepository from '../Repository/UserRepository';
 import User from '../Entity/User';
@@ -21,6 +21,32 @@ export default class UserService {
 
   public async getByEmail(email: string): Promise<User> {
     return await this.userRepository.findByEmail(email);
+  }
+
+  public async updateProfile(
+    user: User,
+    fields: { name?: string; email?: string; password?: string; photoPath?: string },
+  ): Promise<void> {
+    if (fields.email && fields.email !== user.email) {
+      const existing = await this.userRepository.findByEmail(fields.email);
+      if (existing && existing.uid !== user.uid) {
+        throw new ConflictException('Email já está em uso');
+      }
+      user.email = fields.email;
+    }
+
+    if (fields.name && fields.name.trim()) {
+      user.name = fields.name.trim();
+    }
+    if (fields.password) {
+      await user.setPassword(fields.password);
+    }
+    if (fields.photoPath) {
+      user.photoPath = fields.photoPath;
+    }
+    user.updatedAt = new Date();
+
+    await this.userRepository.flush();
   }
 
   public async createInvited(name: string, email: string): Promise<User> {

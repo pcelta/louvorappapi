@@ -9,4 +9,8 @@ export default class ChurchRepository extends AbstractRepository {
 
     await this.em.persist(church).flush();
   }
+
+  public async flush(): Promise<void> {
+    await this.em.flush();
+  }
 }

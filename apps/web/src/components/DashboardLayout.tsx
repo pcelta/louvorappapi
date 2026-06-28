@@ -36,7 +36,7 @@ const navSections: {
     label: 'Gestão',
     items: [
       { label: 'Membros', icon: UsersIcon, to: '/members' },
-      { label: 'Configurações', icon: Cog6ToothIcon },
+      { label: 'Configurações', icon: Cog6ToothIcon, to: '/settings' },
     ],
   },
 ]
@@ -248,8 +248,18 @@ export default function DashboardLayout({
                   </div>
                   <button
                     type="button"
-                    onClick={logout}
+                    onClick={() => {
+                      setMenuOpen(false)
+                      navigate('/profile')
+                    }}
                     className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Perfil
+                  </button>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="block w-full border-t border-slate-100 px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50"
                   >
                     Sair
                   </button>

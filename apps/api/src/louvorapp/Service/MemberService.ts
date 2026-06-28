@@ -29,6 +29,28 @@ export class MemberService {
     return await this.memberRepository.findByChurch(church.id);
   }
 
+  public async updateProfile(
+    member: Member,
+    fields: {
+      name?: string;
+      email?: string;
+      password?: string;
+      photoPath?: string;
+      skills?: string[];
+    },
+  ): Promise<void> {
+    await this.userService.updateProfile(member.user, {
+      name: fields.name,
+      email: fields.email,
+      password: fields.password,
+      photoPath: fields.photoPath,
+    });
+
+    if (fields.skills) {
+      await this.memberSkillsService.setForMember(member, fields.skills);
+    }
+  }
+
   public async updateSkills(
     uid: string,
     church: Church,

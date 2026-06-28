@@ -51,6 +51,41 @@ export type CurrentMember = {
   uid: string
   user: { name: string; email: string; photo_path?: string }
   church: { uid: string; name: string; logo_path: string }
+  skills: { slug: string; name: string; icon: string }[]
+}
+
+export async function updateProfile(
+  token: string,
+  fields: {
+    name: string
+    email: string
+    password?: string
+    photo?: File | null
+    skills: string[]
+  },
+): Promise<void> {
+  const form = new FormData()
+  form.append('name', fields.name)
+  form.append('email', fields.email)
+  form.append('skills', JSON.stringify(fields.skills))
+  if (fields.password) {
+    form.append('password', fields.password)
+  }
+  if (fields.photo) {
+    form.append('photo', fields.photo)
+  }
+
+  const res = await fetch(`${API_URL}/member/me`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar o perfil')
+  }
 }
 
 export async function getMe(token: string): Promise<CurrentMember> {
@@ -62,6 +97,35 @@ export async function getMe(token: string): Promise<CurrentMember> {
 
   if (!res.ok) {
     throw new Error(data?.message ?? 'Sessão inválida')
+  }
+
+  return data
+}
+
+export type Church = { uid: string; name: string; logo_path: string }
+
+export async function updateChurch(
+  token: string,
+  fields: { name?: string; logo?: File | null },
+): Promise<Church> {
+  const form = new FormData()
+  if (fields.name) {
+    form.append('name', fields.name)
+  }
+  if (fields.logo) {
+    form.append('logo', fields.logo)
+  }
+
+  const res = await fetch(`${API_URL}/church`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar as configurações')
   }
 
   return data

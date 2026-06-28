@@ -1,1 +1,15 @@
 @import 'tailwindcss';
+
+@layer base {
+  button:not(:disabled),
+  [role='button'],
+  a[href],
+  label:has(input[type='file']),
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}

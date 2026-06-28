@@ -53,7 +53,7 @@ export class MemberRepository extends AbstractRepository {
     return await this.em.findOne(
       Member,
       { user: { uid, access: { accessToken } } },
-      { populate: ['user', 'church'] },
+      { populate: ['user', 'church', 'memberSkills', 'memberSkills.skill'] },
     );
   }
 }
