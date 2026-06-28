@@ -5,6 +5,7 @@ export class Role {
   public static ROLE_MEMBER = 'member';
   public static ROLE_ADMIN = 'admin';
   public static ROLE_WORSHIP_TEAM = 'worship_team_member';
+  public static ROLE_PASTOR = 'pastor';
 
   @PrimaryKey()
   id!: number;

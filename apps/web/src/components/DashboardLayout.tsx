@@ -3,7 +3,6 @@ import type { ComponentType, ReactNode, SVGProps } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Squares2X2Icon,
-  QueueListIcon,
   CalendarDaysIcon,
   MusicalNoteIcon,
   UsersIcon,
@@ -12,6 +11,7 @@ import {
   ChevronUpDownIcon,
   Bars3Icon,
   XMarkIcon,
+  BuildingLibraryIcon,
 } from '@heroicons/react/24/outline'
 import { getMe, API_URL } from '../lib/api'
 import type { CurrentMember } from '../lib/api'
@@ -27,7 +27,7 @@ const navSections: {
     label: 'Painel',
     items: [
       { label: 'Visão geral', icon: Squares2X2Icon, to: '/home' },
-      { label: 'Repertório', icon: QueueListIcon },
+      { label: 'Cultos', icon: BuildingLibraryIcon, to: '/services' },
       { label: 'Escalas', icon: CalendarDaysIcon },
       { label: 'Músicas', icon: MusicalNoteIcon, to: '/songs' },
     ],

@@ -8,6 +8,7 @@ export default class UidManager {
     artist: 'art',
     song: 'sng',
     song_link: 'lnk',
+    service: 'svc',
   };
 
   public static generate(entityName: string): string {

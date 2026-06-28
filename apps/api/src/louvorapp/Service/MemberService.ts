@@ -29,6 +29,18 @@ export class MemberService {
     return await this.memberRepository.findByChurch(church.id);
   }
 
+  public async searchByRole(
+    church: Church,
+    roleSlug: string,
+    query: string,
+  ): Promise<Member[]> {
+    return await this.memberRepository.searchByRoleAndChurch(
+      church.id,
+      roleSlug,
+      query,
+    );
+  }
+
   public async updateProfile(
     member: Member,
     fields: {
@@ -49,6 +61,22 @@ export class MemberService {
     if (fields.skills) {
       await this.memberSkillsService.setForMember(member, fields.skills);
     }
+  }
+
+  public async updateRoles(
+    uid: string,
+    church: Church,
+    roles: string[],
+  ): Promise<void> {
+    const member = await this.memberRepository.findByUidAndChurch(
+      uid,
+      church.id,
+    );
+    if (!member) {
+      throw new NotFoundException('Membro não encontrado');
+    }
+
+    await this.memberRoleService.setForMember(member, roles);
   }
 
   public async updateSkills(
@@ -72,6 +100,7 @@ export class MemberService {
     email: string,
     church: Church,
     skills: string[] = [],
+    roles: string[] = [],
   ): Promise<{ member: Member; invitation: MemberInvitation }> {
     const existing = await this.userService.getByEmail(email);
     if (existing) {
@@ -88,8 +117,10 @@ export class MemberService {
     member.updatedAt = new Date();
     await this.memberRepository.persist(member);
 
-    await this.memberRoleService.addRoleBySlug(member, Role.ROLE_MEMBER);
-    await this.memberRoleService.addRoleBySlug(member, Role.ROLE_WORSHIP_TEAM);
+    const finalRoles = roles.length
+      ? roles
+      : [Role.ROLE_MEMBER, Role.ROLE_WORSHIP_TEAM];
+    await this.memberRoleService.setForMember(member, finalRoles);
 
     await this.memberSkillsService.setForMember(member, skills);
 

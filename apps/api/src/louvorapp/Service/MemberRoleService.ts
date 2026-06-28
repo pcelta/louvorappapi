@@ -14,8 +14,19 @@ export class MemberRoleService {
     private readonly memberRoleRepository: MemberRoleRepository,
   ) {}
 
+  public async setForMember(member: Member, slugs: string[]): Promise<void> {
+    await this.memberRoleRepository.deleteByMember(member.id);
+
+    for (const slug of slugs) {
+      await this.addRoleBySlug(member, slug);
+    }
+  }
+
   public async addRoleBySlug(member: Member, slug: string): Promise<void> {
     let role = await this.roleRepository.findBySlug(slug);
+    if (!role) {
+      return;
+    }
 
     let memberRole = new MemberRole();
     memberRole.member = member;

@@ -5,6 +5,7 @@ import {
   Put,
   Param,
   Body,
+  Query,
   Res,
   HttpStatus,
   UseGuards,
@@ -48,6 +49,25 @@ export class MemberController {
     res.status(HttpStatus.OK).json(members.map((m) => m.toRaw()));
   }
 
+  @Get('search')
+  @UseGuards(AuthGuard)
+  async search(
+    @ExtractJwtData(JwtToMemberPipe) member: Member,
+    @Query('role') role: string,
+    @Query('q') q: string,
+    @Res() res: Response,
+  ) {
+    const members = await this.memberService.searchByRole(
+      member.church,
+      role ?? '',
+      q ?? '',
+    );
+
+    res
+      .status(HttpStatus.OK)
+      .json(members.map((m) => ({ uid: m.uid, name: m.user.name })));
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   async add(
@@ -69,6 +89,7 @@ export class MemberController {
       body.email,
       admin.church,
       body.skills ?? [],
+      body.roles ?? [],
     );
 
     res.status(HttpStatus.CREATED).json({
@@ -136,6 +157,19 @@ export class MemberController {
     await this.memberService.updateSkills(uid, admin.church, body.skills ?? []);
 
     res.status(HttpStatus.OK).json({ message: 'Habilidades atualizadas' });
+  }
+
+  @Put(':uid/roles')
+  @UseGuards(AuthGuard)
+  async updateRoles(
+    @ExtractJwtData(JwtToMemberPipe) admin: Member,
+    @Param('uid') uid: string,
+    @Body() body: { roles?: string[] },
+    @Res() res: Response,
+  ) {
+    await this.memberService.updateRoles(uid, admin.church, body.roles ?? []);
+
+    res.status(HttpStatus.OK).json({ message: 'Funções atualizadas' });
   }
 
   private parseSkills(raw?: string): string[] {

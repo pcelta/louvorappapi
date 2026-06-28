@@ -11,8 +11,15 @@ import Button from '../components/Button'
 import TextField from '../components/TextField'
 import SkillPicker from '../components/SkillPicker'
 import InstrumentIcon from '../components/InstrumentIcon'
-import { listMembers, addMember, listSkills, updateMemberSkills } from '../lib/api'
-import type { MemberListItem, Skill } from '../lib/api'
+import {
+  listMembers,
+  addMember,
+  listSkills,
+  updateMemberSkills,
+  listRoles,
+  updateMemberRoles,
+} from '../lib/api'
+import type { MemberListItem, Skill, MemberRole } from '../lib/api'
 import { getToken } from '../lib/auth'
 import { isEmail } from '../lib/validation'
 
@@ -51,18 +58,23 @@ function CopyInviteButton({ code }: { code: string }) {
   )
 }
 
+const DEFAULT_ROLES = ['member', 'worship_team_member']
+
 function AddMemberModal({
   skills,
+  roles,
   onClose,
   onAdded,
 }: {
   skills: Skill[]
+  roles: MemberRole[]
   onClose: () => void
   onAdded: () => void
 }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(DEFAULT_ROLES)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -72,6 +84,12 @@ function AddMemberModal({
   function toggleSkill(slug: string) {
     setSelectedSkills((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    )
+  }
+
+  function toggleRole(slug: string) {
+    setSelectedRoles((prev) =>
+      prev.includes(slug) ? prev.filter((r) => r !== slug) : [...prev, slug],
     )
   }
 
@@ -89,7 +107,13 @@ function AddMemberModal({
 
     setSubmitting(true)
     try {
-      const result = await addMember(token, name, email, selectedSkills)
+      const result = await addMember(
+        token,
+        name,
+        email,
+        selectedSkills,
+        selectedRoles,
+      )
       setInviteUrl(`${window.location.origin}${result.invitation.path}`)
       onAdded()
     } catch (err) {
@@ -182,6 +206,30 @@ function AddMemberModal({
             />
             <div>
               <p className="mb-2 block text-sm font-medium text-slate-700">
+                Funções
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {roles.map((role) => {
+                  const on = selectedRoles.includes(role.slug)
+                  return (
+                    <button
+                      key={role.slug}
+                      type="button"
+                      onClick={() => toggleRole(role.slug)}
+                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                        on
+                          ? 'border-teal-600 bg-teal-50 text-teal-700'
+                          : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {role.name}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 block text-sm font-medium text-slate-700">
                 Habilidades
               </p>
               <SkillPicker
@@ -200,19 +248,24 @@ function AddMemberModal({
   )
 }
 
-function EditSkillsModal({
+function EditMemberModal({
   member,
   skills,
+  roles,
   onClose,
   onSaved,
 }: {
   member: MemberListItem
   skills: Skill[]
+  roles: MemberRole[]
   onClose: () => void
   onSaved: () => void
 }) {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(
     member.skills.map((s) => s.slug),
+  )
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(
+    member.roles.map((r) => r.slug),
   )
   const [submitError, setSubmitError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -223,12 +276,19 @@ function EditSkillsModal({
     )
   }
 
+  function toggleRole(slug: string) {
+    setSelectedRoles((prev) =>
+      prev.includes(slug) ? prev.filter((r) => r !== slug) : [...prev, slug],
+    )
+  }
+
   async function save() {
     const token = getToken()
     if (!token) return
     setSubmitError('')
     setSubmitting(true)
     try {
+      await updateMemberRoles(token, member.uid, selectedRoles)
       await updateMemberSkills(token, member.uid, selectedSkills)
       onSaved()
       onClose()
@@ -249,11 +309,9 @@ function EditSkillsModal({
         aria-label="Fechar"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="relative max-h-[90vh] w-full max-w-md overflow-auto rounded-2xl bg-white p-6 shadow-xl">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Editar habilidades
-          </h2>
+          <h2 className="text-lg font-semibold text-slate-900">Editar membro</h2>
           <button
             type="button"
             onClick={onClose}
@@ -266,19 +324,51 @@ function EditSkillsModal({
 
         <p className="mt-1 text-sm text-slate-500">{member.user.name}</p>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-5">
           {submitError && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {submitError}
             </div>
           )}
-          <SkillPicker
-            skills={skills}
-            selected={selectedSkills}
-            onToggle={toggleSkill}
-          />
+
+          <div>
+            <p className="mb-2 block text-sm font-medium text-slate-700">
+              Funções
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {roles.map((role) => {
+                const on = selectedRoles.includes(role.slug)
+                return (
+                  <button
+                    key={role.slug}
+                    type="button"
+                    onClick={() => toggleRole(role.slug)}
+                    className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                      on
+                        ? 'border-teal-600 bg-teal-50 text-teal-700'
+                        : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    {role.name}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 block text-sm font-medium text-slate-700">
+              Habilidades
+            </p>
+            <SkillPicker
+              skills={skills}
+              selected={selectedSkills}
+              onToggle={toggleSkill}
+            />
+          </div>
+
           <Button className="w-full" onClick={save} disabled={submitting}>
-            {submitting ? 'Salvando...' : 'Salvar habilidades'}
+            {submitting ? 'Salvando...' : 'Salvar'}
           </Button>
         </div>
       </div>
@@ -289,6 +379,7 @@ function EditSkillsModal({
 export default function Members() {
   const [members, setMembers] = useState<MemberListItem[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
+  const [roles, setRoles] = useState<MemberRole[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
@@ -309,9 +400,14 @@ export default function Members() {
 
   useEffect(() => {
     load()
+    const token = getToken()
+    if (!token) return
     listSkills()
       .then(setSkills)
       .catch(() => setSkills([]))
+    listRoles(token)
+      .then(setRoles)
+      .catch(() => setRoles([]))
   }, [])
 
   return (
@@ -409,15 +505,17 @@ export default function Members() {
           {modalOpen && (
             <AddMemberModal
               skills={skills}
+              roles={roles}
               onClose={() => setModalOpen(false)}
               onAdded={load}
             />
           )}
 
           {editing && (
-            <EditSkillsModal
+            <EditMemberModal
               member={editing}
               skills={skills}
+              roles={roles}
               onClose={() => setEditing(null)}
               onSaved={load}
             />

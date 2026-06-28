@@ -14,4 +14,8 @@ export class RoleRepository extends AbstractRepository {
 
     return role;
   }
+
+  public async findAll(): Promise<Role[]> {
+    return await this.em.find(Role, {}, { orderBy: { name: 'asc' } });
+  }
 }

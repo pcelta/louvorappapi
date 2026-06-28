@@ -13,4 +13,8 @@ export default class MemberInviteDTO {
   @Optional()
   @ItemType(String)
   public skills?: string[];
+
+  @Optional()
+  @ItemType(String)
+  public roles?: string[];
 }

@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 import Members from './pages/Members'
 import Songs from './pages/Songs'
+import Services from './pages/Services'
 import SongForm from './pages/SongForm'
 import SongDetail from './pages/SongDetail'
 import Settings from './pages/Settings'
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/songs/new" element={<SongForm />} />
         <Route path="/songs/:uid" element={<SongDetail />} />
         <Route path="/songs/:uid/edit" element={<SongForm />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/member-invitation/:code" element={<AcceptInvitation />} />

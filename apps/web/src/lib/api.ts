@@ -194,6 +194,41 @@ export async function updateMemberSkills(
   }
 }
 
+export async function listRoles(token: string): Promise<MemberRole[]> {
+  const res = await fetch(`${API_URL}/role`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível carregar as funções')
+  }
+
+  return data
+}
+
+export async function updateMemberRoles(
+  token: string,
+  uid: string,
+  roles: string[],
+): Promise<void> {
+  const res = await fetch(`${API_URL}/member/${uid}/roles`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ roles }),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível atualizar as funções')
+  }
+}
+
 export type AddMemberResult = {
   member: MemberListItem
   invitation: { code: string; path: string; expires_at: string }
@@ -204,6 +239,7 @@ export async function addMember(
   name: string,
   email: string,
   skills: string[] = [],
+  roles: string[] = [],
 ): Promise<AddMemberResult> {
   const res = await fetch(`${API_URL}/member`, {
     method: 'POST',
@@ -211,7 +247,7 @@ export async function addMember(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ name, email, skills }),
+    body: JSON.stringify({ name, email, skills, roles }),
   })
 
   const data = await res.json().catch(() => null)
@@ -389,6 +425,105 @@ export async function updateSong(
 
   if (!res.ok) {
     throw new Error(data?.message ?? 'Não foi possível salvar a música')
+  }
+
+  return data
+}
+
+export type PastorRef = { uid: string; name: string }
+
+export async function searchPastors(
+  token: string,
+  query: string,
+): Promise<PastorRef[]> {
+  const res = await fetch(
+    `${API_URL}/member/search?role=pastor&q=${encodeURIComponent(query)}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  )
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível buscar pastores')
+  }
+
+  return data
+}
+
+export type ServiceData = {
+  uid: string
+  title: string
+  subtitle?: string
+  notes?: string
+  is_supper: boolean
+  scheduled_at: string
+  created_at: string
+  pastors: PastorRef[]
+}
+
+export type ServicePayload = {
+  title?: string
+  subtitle?: string
+  notes?: string
+  isSupper?: boolean
+  scheduledAt: string
+  pastorUids?: string[]
+}
+
+export async function listServices(token: string): Promise<ServiceData[]> {
+  const res = await fetch(`${API_URL}/service`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível carregar os cultos')
+  }
+
+  return data
+}
+
+export async function createService(
+  token: string,
+  payload: ServicePayload,
+): Promise<ServiceData> {
+  const res = await fetch(`${API_URL}/service`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar o culto')
+  }
+
+  return data
+}
+
+export async function updateService(
+  token: string,
+  uid: string,
+  payload: ServicePayload,
+): Promise<ServiceData> {
+  const res = await fetch(`${API_URL}/service/${uid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar o culto')
   }
 
   return data

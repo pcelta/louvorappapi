@@ -34,6 +34,12 @@ import { SongController } from './Controller/SongController';
 import { SongService } from './Service/SongService';
 import { SongRepository } from './Repository/SongRepository';
 import { SongLinkRepository } from './Repository/SongLinkRepository';
+import { ServiceController } from './Controller/ServiceController';
+import { ServiceService } from './Service/ServiceService';
+import { ServiceRepository } from './Repository/ServiceRepository';
+import { ServicePastorRepository } from './Repository/ServicePastorRepository';
+import { RoleController } from './Controller/RoleController';
+import { RoleService } from './Service/RoleService';
 import { JwtToUserPipe } from './Util/JwtToUserPiper';
 
 @Module({
@@ -70,6 +76,8 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     MemberSkillsService,
     ArtistService,
     SongService,
+    ServiceService,
+    RoleService,
 
     // repositories
     MemberRepository,
@@ -84,6 +92,8 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     ArtistRepository,
     SongRepository,
     SongLinkRepository,
+    ServiceRepository,
+    ServicePastorRepository,
   ],
   controllers: [
     UserController,
@@ -94,6 +104,8 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     SkillController,
     ArtistController,
     SongController,
+    ServiceController,
+    RoleController,
   ],
 })
 export class LouvorappModule {}

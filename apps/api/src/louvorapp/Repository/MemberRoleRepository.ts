@@ -8,4 +8,8 @@ export class MemberRoleRepository extends AbstractRepository {
     delete memberRole['id'];
     await this.em.persist(memberRole).flush();
   }
+
+  public async deleteByMember(memberId: number): Promise<void> {
+    await this.em.nativeDelete(MemberRole, { member: memberId });
+  }
 }

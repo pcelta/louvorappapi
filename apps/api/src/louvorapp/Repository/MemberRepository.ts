@@ -27,6 +27,39 @@ export class MemberRepository extends AbstractRepository {
     return await this.em.findOne(Member, { uid, church: churchId });
   }
 
+  public async findByUidsAndChurch(
+    uids: string[],
+    churchId: number,
+  ): Promise<Member[]> {
+    if (!uids.length) {
+      return [];
+    }
+
+    return await this.em.find(Member, {
+      uid: { $in: uids },
+      church: churchId,
+    });
+  }
+
+  public async searchByRoleAndChurch(
+    churchId: number,
+    roleSlug: string,
+    query: string,
+  ): Promise<Member[]> {
+    const where: Record<string, unknown> = {
+      church: churchId,
+      memberRoles: { role: { slug: roleSlug } },
+    };
+    if (query) {
+      where.user = { name: { $ilike: `%${query}%` } };
+    }
+
+    return await this.em.find(Member, where, {
+      populate: ['user'],
+      limit: 20,
+    });
+  }
+
   public async findByChurch(churchId: number): Promise<Member[]> {
     return await this.em.find(
       Member,
