@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { PlusIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline'
 import DashboardLayout from '../components/DashboardLayout'
 import Button from '../components/Button'
@@ -217,7 +218,13 @@ export default function Services() {
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Cultos</h1>
               <p className="mt-1 text-sm text-slate-500">
-                Cultos e atividades da igreja
+                Cultos e atividades da igreja ·{' '}
+                <Link
+                  to="/services/prototype"
+                  className="font-medium text-teal-700 hover:underline"
+                >
+                  Ver protótipo
+                </Link>
               </p>
             </div>
             <Button onClick={() => setAdding(true)} className="flex items-center gap-2">

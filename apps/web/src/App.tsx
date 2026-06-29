@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Members from './pages/Members'
 import Songs from './pages/Songs'
 import Services from './pages/Services'
+import ServicesPrototype from './pages/ServicesPrototype'
 import SongForm from './pages/SongForm'
 import SongDetail from './pages/SongDetail'
 import Settings from './pages/Settings'
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/songs/:uid" element={<SongDetail />} />
         <Route path="/songs/:uid/edit" element={<SongForm />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/services/prototype" element={<ServicesPrototype />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/member-invitation/:code" element={<AcceptInvitation />} />
