@@ -8,6 +8,10 @@ export class ServiceRepository extends AbstractRepository {
     'pastors',
     'pastors.member',
     'pastors.member.user',
+    'worships',
+    'worships.roster',
+    'worships.roster.member',
+    'worships.roster.member.user',
   ] as const;
 
   public async persist(service: Service): Promise<void> {

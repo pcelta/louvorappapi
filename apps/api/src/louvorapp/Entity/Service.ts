@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import Church from './Church';
 import { ServicePastor } from './ServicePastor';
+import { Worship } from './Worship';
 
 @Entity({ tableName: 'services' })
 export default class Service {
@@ -48,6 +49,26 @@ export default class Service {
   })
   pastors: Collection<ServicePastor>;
 
+  @OneToMany({ entity: () => Worship, mappedBy: 'service' })
+  worships: Collection<Worship>;
+
+  private rosterTeam() {
+    if (!this.worships?.isInitialized()) {
+      return [];
+    }
+
+    const worship = this.worships.getItems()[0];
+    if (!worship || !worship.roster?.isInitialized()) {
+      return [];
+    }
+
+    return worship.roster.getItems().map((r) => ({
+      uid: r.member.uid,
+      name: r.member.user.name,
+      photo_path: r.member.user.photoPath,
+    }));
+  }
+
   public toRaw() {
     return {
       uid: this.uid,
@@ -63,6 +84,7 @@ export default class Service {
             name: sp.member.user.name,
           }))
         : [],
+      team: this.rosterTeam(),
     };
   }
 }

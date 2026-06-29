@@ -28,7 +28,7 @@ const navSections: {
     items: [
       { label: 'Visão geral', icon: Squares2X2Icon, to: '/home' },
       { label: 'Cultos', icon: BuildingLibraryIcon, to: '/services' },
-      { label: 'Escalas', icon: CalendarDaysIcon },
+      { label: 'Escala Louvor', icon: CalendarDaysIcon, to: '/worships' },
       { label: 'Músicas', icon: MusicalNoteIcon, to: '/songs' },
     ],
   },

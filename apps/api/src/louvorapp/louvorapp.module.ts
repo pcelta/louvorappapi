@@ -40,6 +40,11 @@ import { ServiceRepository } from './Repository/ServiceRepository';
 import { ServicePastorRepository } from './Repository/ServicePastorRepository';
 import { RoleController } from './Controller/RoleController';
 import { RoleService } from './Service/RoleService';
+import { WorshipController } from './Controller/WorshipController';
+import { WorshipService } from './Service/WorshipService';
+import { WorshipRepository } from './Repository/WorshipRepository';
+import { WorshipSongRepository } from './Repository/WorshipSongRepository';
+import { WorshipTeamRosterRepository } from './Repository/WorshipTeamRosterRepository';
 import { JwtToUserPipe } from './Util/JwtToUserPiper';
 
 @Module({
@@ -78,6 +83,7 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     SongService,
     ServiceService,
     RoleService,
+    WorshipService,
 
     // repositories
     MemberRepository,
@@ -94,6 +100,9 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     SongLinkRepository,
     ServiceRepository,
     ServicePastorRepository,
+    WorshipRepository,
+    WorshipSongRepository,
+    WorshipTeamRosterRepository,
   ],
   controllers: [
     UserController,
@@ -106,6 +115,7 @@ import { JwtToUserPipe } from './Util/JwtToUserPiper';
     SongController,
     ServiceController,
     RoleController,
+    WorshipController,
   ],
 })
 export class LouvorappModule {}

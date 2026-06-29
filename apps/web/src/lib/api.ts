@@ -432,22 +432,32 @@ export async function updateSong(
 
 export type PastorRef = { uid: string; name: string }
 
-export async function searchPastors(
+export async function searchMembersByRole(
   token: string,
+  role: string,
   query: string,
 ): Promise<PastorRef[]> {
   const res = await fetch(
-    `${API_URL}/member/search?role=pastor&q=${encodeURIComponent(query)}`,
+    `${API_URL}/member/search?role=${encodeURIComponent(
+      role,
+    )}&q=${encodeURIComponent(query)}`,
     { headers: { Authorization: `Bearer ${token}` } },
   )
 
   const data = await res.json().catch(() => null)
 
   if (!res.ok) {
-    throw new Error(data?.message ?? 'Não foi possível buscar pastores')
+    throw new Error(data?.message ?? 'Não foi possível buscar membros')
   }
 
   return data
+}
+
+export async function searchPastors(
+  token: string,
+  query: string,
+): Promise<PastorRef[]> {
+  return searchMembersByRole(token, 'pastor', query)
 }
 
 export type ServiceData = {
@@ -459,6 +469,7 @@ export type ServiceData = {
   scheduled_at: string
   created_at: string
   pastors: PastorRef[]
+  team: { uid: string; name: string; photo_path?: string }[]
 }
 
 export type ServicePayload = {
@@ -524,6 +535,108 @@ export async function updateService(
 
   if (!res.ok) {
     throw new Error(data?.message ?? 'Não foi possível salvar o culto')
+  }
+
+  return data
+}
+
+export type WorshipTeamMember = { uid: string; name: string; photo_path?: string }
+
+export type WorshipData = {
+  uid: string
+  title: string
+  service: { uid: string; title: string } | null
+  songs: {
+    uid: string
+    position: number
+    song: {
+      uid: string
+      title: string
+      key?: string
+      artist: { name: string } | null
+    }
+  }[]
+  team: WorshipTeamMember[]
+}
+
+export type WorshipPayload = {
+  title: string
+  serviceUid: string
+  songUids?: string[]
+  memberUids?: string[]
+}
+
+export async function listWorships(token: string): Promise<WorshipData[]> {
+  const res = await fetch(`${API_URL}/worship`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível carregar as escalas')
+  }
+
+  return data
+}
+
+export async function getWorship(
+  token: string,
+  uid: string,
+): Promise<WorshipData> {
+  const res = await fetch(`${API_URL}/worship/${uid}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Escala não encontrada')
+  }
+
+  return data
+}
+
+export async function createWorship(
+  token: string,
+  payload: WorshipPayload,
+): Promise<WorshipData> {
+  const res = await fetch(`${API_URL}/worship`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar a escala')
+  }
+
+  return data
+}
+
+export async function updateWorship(
+  token: string,
+  uid: string,
+  payload: WorshipPayload,
+): Promise<WorshipData> {
+  const res = await fetch(`${API_URL}/worship/${uid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok) {
+    throw new Error(data?.message ?? 'Não foi possível salvar a escala')
   }
 
   return data

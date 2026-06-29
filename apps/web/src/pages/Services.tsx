@@ -6,9 +6,11 @@ import DashboardLayout from '../components/DashboardLayout'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
 import PastorSelect from '../components/PastorSelect'
+import WorshipTeamStack from '../components/WorshipTeamStack'
 import { listServices, createService, updateService } from '../lib/api'
 import type { ServiceData, PastorRef } from '../lib/api'
 import { getToken } from '../lib/auth'
+import { mockInstrument } from '../lib/mockInstruments'
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString('pt-BR', {
@@ -255,6 +257,11 @@ export default function Services() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium text-slate-900">
                           {service.title}
+                          {service.is_supper && (
+                            <span className="shrink-0 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
+                              Ceia
+                            </span>
+                          )}
                           {service.subtitle && (
                             <span className="font-normal text-slate-500">
                               {' '}
@@ -268,11 +275,12 @@ export default function Services() {
                             ` · ${service.pastors.map((p) => p.name).join(', ')}`}
                         </p>
                       </div>
-                      {service.is_supper && (
-                        <span className="shrink-0 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
-                          Ceia
-                        </span>
-                      )}
+                      <WorshipTeamStack
+                        team={service.team.map((m, i) => ({
+                          ...m,
+                          instrument: mockInstrument(i),
+                        }))}
+                      />
                     </button>
                   </li>
                 ))}

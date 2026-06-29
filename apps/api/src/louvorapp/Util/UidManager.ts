@@ -9,6 +9,9 @@ export default class UidManager {
     song: 'sng',
     song_link: 'lnk',
     service: 'svc',
+    worship: 'wsh',
+    worship_song: 'wss',
+    worship_team_roster: 'wtr',
   };
 
   public static generate(entityName: string): string {

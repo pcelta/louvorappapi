@@ -31,4 +31,15 @@ export class SongRepository extends AbstractRepository {
       { populate: ['artist', 'links'] },
     );
   }
+
+  public async findByUidsAndChurch(
+    uids: string[],
+    churchId: number,
+  ): Promise<Song[]> {
+    if (!uids.length) {
+      return [];
+    }
+
+    return await this.em.find(Song, { uid: { $in: uids }, church: churchId });
+  }
 }
