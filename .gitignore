@@ -402,3 +402,7 @@ dist
 # TypeScript incremental build cache
 *.tsbuildinfo
 temp/
+
+# Local dev uploads (persisted via docker-compose bind mount)
+/data/uploads/*
+!/data/uploads/.gitkeep

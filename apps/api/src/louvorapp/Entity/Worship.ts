@@ -73,7 +73,7 @@ export class Worship {
       uid: this.uid,
       title: this.title,
       service: this.service
-        ? { uid: this.service.uid, title: this.service.title }
+        ? { uid: this.service.uid, title: this.service.title, scheduled_at: this.service.scheduledAt }
         : null,
       songs,
       team,

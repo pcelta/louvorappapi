@@ -9,6 +9,12 @@ import type { WorshipData } from '../lib/api'
 import { getToken } from '../lib/auth'
 import { mockInstrument } from '../lib/mockInstruments'
 
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
+}
 export default function Worships() {
   const navigate = useNavigate()
   const [worships, setWorships] = useState<WorshipData[]>([])
@@ -64,7 +70,7 @@ export default function Worships() {
                         </p>
                         {worship.service && (
                           <p className="text-sm text-slate-500">
-                            {worship.service.title}
+                            {worship.service.title}: {formatDateTime(worship.service.scheduled_at)}
                           </p>
                         )}
                       </div>

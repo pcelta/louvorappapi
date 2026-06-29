@@ -545,7 +545,7 @@ export type WorshipTeamMember = { uid: string; name: string; photo_path?: string
 export type WorshipData = {
   uid: string
   title: string
-  service: { uid: string; title: string } | null
+  service: { uid: string; title: string, scheduled_at: string } | null
   songs: {
     uid: string
     position: number
